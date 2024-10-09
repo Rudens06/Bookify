@@ -14,16 +14,11 @@ defmodule BookifyWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BookifyWeb do
-    pipe_through :browser
+  scope "/api", BookifyWeb.Api.V1 do
+    pipe_through :api
 
-    get "/", PageController, :home
+    resources "/authors", AuthorController, except: [:new, :edit]
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", BookifyWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:bookify, :dev_routes) do
