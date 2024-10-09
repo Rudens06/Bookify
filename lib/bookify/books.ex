@@ -10,6 +10,8 @@ defmodule Bookify.Books do
 
   def get_book!(id), do: Repo.get!(Book, id)
 
+  def get_book_by_isbn!(isbn), do: Repo.get_by!(Book, isbn: isbn)
+
   def create_book(attrs \\ %{}) do
     %Book{}
     |> Book.changeset(attrs)

@@ -19,7 +19,11 @@ defmodule BookifyWeb.Router do
 
     resources "/authors", AuthorController, except: [:new, :edit]
     resources "/users", UserController, only: [:update, :show, :index]
-    resources "/books", BookController, except: [:new, :edit]
+
+    resources "/books", BookController, only: [:index]
+    get "/books/:isbn", BookController, :show
+    post "/books/:isbn", BookController, :create
+    patch "/books/:isbn", BookController, :update
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

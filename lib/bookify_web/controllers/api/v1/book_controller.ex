@@ -19,21 +19,21 @@ defmodule BookifyWeb.Api.V1.BookController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    book = Books.get_book!(id)
+  def show(conn, %{"isbn" => isbn}) do
+    book = Books.get_book_by_isbn!(isbn)
     render(conn, :show, book: book)
   end
 
-  def update(conn, %{"id" => id, "book" => book_params}) do
-    book = Books.get_book!(id)
+  def update(conn, %{"isbn" => isbn, "book" => book_params}) do
+    book = Books.get_book_by_isbn!(isbn)
 
     with {:ok, %Book{} = book} <- Books.update_book(book, book_params) do
       render(conn, :show, book: book)
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    book = Books.get_book!(id)
+  def delete(conn, %{"isbn" => isbn}) do
+    book = Books.get_book_by_isbn!(isbn)
 
     with {:ok, %Book{}} <- Books.delete_book(book) do
       send_resp(conn, :no_content, "")

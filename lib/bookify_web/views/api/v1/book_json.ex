@@ -2,7 +2,6 @@ defmodule BookifyWeb.Api.V1.BookJSON do
   alias Bookify.Books.Book
 
   @public_keys [
-    :id,
     :isbn,
     :title,
     :author_id,
