@@ -32,6 +32,7 @@ defmodule Bookify.Books.Book do
     field :cover_image_url, :string
     field :anotation, :string
     belongs_to :author, Author
+    has_many :reviews, Review
 
     timestamps()
   end

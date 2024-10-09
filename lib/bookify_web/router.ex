@@ -20,10 +20,17 @@ defmodule BookifyWeb.Router do
     resources "/authors", AuthorController, except: [:new, :edit]
     resources "/users", UserController, only: [:update, :show, :index]
 
-    resources "/books", BookController, only: [:index]
+    get "/books", BookController, :index
     get "/books/:isbn", BookController, :show
     post "/books/:isbn", BookController, :create
     patch "/books/:isbn", BookController, :update
+    delete "/books/:isbn", BookController, :delete
+
+    get "/books/:isbn/reviews", ReviewController, :index
+    get "/books/:isbn/reviews/:id", ReviewController, :show
+    post "/books/:isbn/reviews", ReviewController, :create
+    patch "/books/:isbn/reviews/:id", ReviewController, :update
+    delete "/books/:isbn/reviews/:id", ReviewController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
