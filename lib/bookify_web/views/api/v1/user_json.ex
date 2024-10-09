@@ -1,7 +1,7 @@
 defmodule BookifyWeb.Api.V1.UserJSON do
   alias Bookify.Users.User
 
-  @public_keys [:id, :name, :username]
+  @public_keys [:name, :username]
 
   def index(%{users: users}) do
     %{data: for(user <- users, do: data(user))}
@@ -13,5 +13,6 @@ defmodule BookifyWeb.Api.V1.UserJSON do
 
   defp data(%User{} = user) do
     Map.take(user, @public_keys)
+    |> Map.put(:id, user.public_id)
   end
 end

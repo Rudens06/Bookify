@@ -12,12 +12,12 @@ defmodule BookifyWeb.Api.V1.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Users.get_user!(id)
+    user = Users.get_user_by_public_id!(id)
     render(conn, :show, user: user)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Users.get_user!(id)
+    user = Users.get_user_by_public_id!(id)
 
     with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
       render(conn, :show, user: user)

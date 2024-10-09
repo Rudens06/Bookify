@@ -1,11 +1,13 @@
 defmodule Bookify.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Bookify.Utils.GenId
 
   @cast_fields [:name, :username, :email, :password, :password_confirmation, :current_password]
   @required_fields [:name, :email, :password]
 
   schema("users") do
+    field :public_id, :string
     field :name, :string
     field :username, :string
     field :email, :string
@@ -23,5 +25,15 @@ defmodule Bookify.Users.User do
     user
     |> cast(attrs, [@cast_fields])
     |> validate_required(@required_fields)
+  end
+
+  def registration_changeset(attrs) do
+    new()
+    |> cast(attrs, [@cast_fields])
+    |> validate_required(@required_fields)
+  end
+
+  def new() do
+    %__MODULE__{public_id: GenId.generate()}
   end
 end
