@@ -14,10 +14,11 @@ defmodule BookifyWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", BookifyWeb.Api.V1 do
+  scope "/api/v1", BookifyWeb.Api.V1 do
     pipe_through :api
 
     resources "/authors", AuthorController, except: [:new, :edit]
+    resources "/users", UserController, only: [:update, :show, :index]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

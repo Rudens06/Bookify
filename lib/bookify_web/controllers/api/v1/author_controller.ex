@@ -15,7 +15,6 @@ defmodule BookifyWeb.Api.V1.AuthorController do
     with {:ok, %Author{} = author} <- Authors.create_author(author_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/authors/#{author}")
       |> render(:show, author: author)
     end
   end
