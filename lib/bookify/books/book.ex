@@ -3,6 +3,8 @@ defmodule Bookify.Books.Book do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Bookify.Reviews.Review
+
   @cast_fields [
     :title,
     :isbn,
