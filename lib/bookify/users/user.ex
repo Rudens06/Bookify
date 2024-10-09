@@ -30,7 +30,7 @@ defmodule Bookify.Users.User do
     |> validate_required(@required_register_fields)
   end
 
-  def registration_changeset(user, attrs) do
+  def update_changeset(user, attrs) do
     user
     |> cast(attrs, [@update_fields])
   end
