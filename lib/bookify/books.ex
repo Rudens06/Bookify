@@ -4,13 +4,17 @@ defmodule Bookify.Books do
 
   alias Bookify.Books.Book
 
-  def list_books do
+  def list_books(preloads \\ []) do
     Repo.all(Book)
+    |> Repo.preload(preloads)
   end
 
   def get_book!(id), do: Repo.get!(Book, id)
 
-  def get_book_by_isbn!(isbn), do: Repo.get_by!(Book, isbn: isbn)
+  def get_book_by_isbn!(isbn, preloads \\ []) do
+    Repo.get_by!(Book, isbn: isbn)
+    |> Repo.preload(preloads)
+  end
 
   def create_book(attrs \\ %{}) do
     %Book{}
