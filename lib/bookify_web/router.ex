@@ -41,6 +41,10 @@ defmodule BookifyWeb.Router do
   end
 
   scope "/", BookifyWeb do
+    pipe_through :browser
+
+    live "/", BookLive.Index
+    live "/accounts/register", AccountLive.Register
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -1,0 +1,16 @@
+<div class="">
+  <.form for={@form} phx-submit="save">
+    <.input field={@form[:name]} type="text" label="Name" placeholder="Name" />
+    <.input field={@form[:email]} type="text" label="Email" placeholder="email@exmple.com" />
+    <.input field={@form[:password]} type="password" label="Password" placeholder="Password" />
+    <.input
+      field={@form[:password_confirmation]}
+      type="password"
+      label="Confirm Password"
+      placeholder="Password"
+    />
+    <.button phx-disable-with="Saving..." class="my-4">
+      Register
+    </.button>
+  </.form>
+</div>
