@@ -1,4 +1,4 @@
-defmodule BookifyWeb.Plugs.ApiAuth do
+defmodule BookifyWeb.Plugs.Api.V1.AuthenticateApi do
   import Phoenix.Controller
   import Plug.Conn
 

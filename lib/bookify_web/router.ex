@@ -1,7 +1,7 @@
 defmodule BookifyWeb.Router do
   use BookifyWeb, :router
 
-  alias BookifyWeb.Plugs.ApiAuth
+  alias BookifyWeb.Plugs.Api.V1.AuthenticateApi
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -17,7 +17,7 @@ defmodule BookifyWeb.Router do
   end
 
   pipeline :authenticated_api do
-    plug ApiAuth
+    plug AuthenticateApi
   end
 
   scope "/api/v1", BookifyWeb.Api.V1 do
