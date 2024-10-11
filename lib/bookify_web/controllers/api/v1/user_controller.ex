@@ -1,6 +1,8 @@
 defmodule BookifyWeb.Api.V1.UserController do
   use BookifyWeb, :controller
 
+  import Bookify.Utils.User
+
   alias Bookify.Users
   alias Bookify.Users.User
 
@@ -13,6 +15,11 @@ defmodule BookifyWeb.Api.V1.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Users.get_user_by_public_id!(id)
+    render(conn, :show, user: user)
+  end
+
+  def current(conn, _params) do
+    user = current_user(conn)
     render(conn, :show, user: user)
   end
 

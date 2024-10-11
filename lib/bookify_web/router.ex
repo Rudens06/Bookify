@@ -1,6 +1,8 @@
 defmodule BookifyWeb.Router do
   use BookifyWeb, :router
 
+  alias BookifyWeb.Plugs.ApiAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -14,11 +16,16 @@ defmodule BookifyWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authenticated_api do
+    plug ApiAuth
+  end
+
   scope "/api/v1", BookifyWeb.Api.V1 do
-    pipe_through :api
+    pipe_through [:api, :authenticated_api]
 
     resources "/authors", AuthorController, except: [:new, :edit]
-    resources "/users", UserController, only: [:update, :show, :index]
+    resources "/users", UserController, only: [:update, :index]
+    get "/users/current", UserController, :current
 
     get "/books", BookController, :index
     get "/books/:isbn", BookController, :show
@@ -31,6 +38,9 @@ defmodule BookifyWeb.Router do
     post "/books/:isbn/reviews", ReviewController, :create
     patch "/books/:isbn/reviews/:id", ReviewController, :update
     delete "/books/:isbn/reviews/:id", ReviewController, :delete
+  end
+
+  scope "/", BookifyWeb do
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

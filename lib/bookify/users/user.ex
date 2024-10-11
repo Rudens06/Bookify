@@ -4,8 +4,8 @@ defmodule Bookify.Users.User do
   alias Bookify.Utils.GenId
   alias Bookify.Reviews.Review
 
-  @register_fields [:username, :email, :password, :password_confirmation]
-  @required_register_fields [:username, :email, :password, :password_confirmation]
+  @register_fields [:email, :password, :password_confirmation]
+  @required_register_fields [:email, :password, :password_confirmation]
   @update_fields [:username, :name]
 
   schema("users") do
@@ -33,6 +33,11 @@ defmodule Bookify.Users.User do
   def update_changeset(user, attrs) do
     user
     |> cast(attrs, [@update_fields])
+  end
+
+  def update_last_login_changeset(user, timestamp) do
+    user
+    |> put_change(:last_login, timestamp)
   end
 
   defp new() do
