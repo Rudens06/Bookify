@@ -6,10 +6,10 @@ defmodule Bookify.Auth.Token do
 
   @cast_fields [:token, :expires_at, :user_id]
   @required_fields [:token, :expires_at, :user_id]
-  @token_contexts ["api", "remeber"]
+  @token_contexts ["api", "remember"]
 
-  schema("tokens") do
-    field :hashed_token, :string
+  schema("user_tokens") do
+    field :token, :string
     field :expires_at, :string
     field :context, :string
     belongs_to :user, User

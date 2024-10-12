@@ -10,7 +10,7 @@ defmodule BookifyWeb.Plugs.Api.V1.AuthenticateApi do
     token =
       get_req_header(conn, "Authorization") |> List.first() |> String.trim_leading("Bearer ")
 
-    case Auth.get_user_by_token(token) do
+    case Auth.get_user_by_token(token, :api) do
       nil ->
         conn
         |> put_status(:unauthorized)
