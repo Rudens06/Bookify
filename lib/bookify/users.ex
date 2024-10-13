@@ -29,6 +29,11 @@ defmodule Bookify.Users do
     Repo.delete(user)
   end
 
+  def generate_new_api_key(user) do
+    invalidate_tokens(user, :api)
+    generate_token(user.id, :api)
+  end
+
   def generate_token(user_id, type) when type in [:api, :session] do
     {token, user_token} =
       UserToken.build_token(user_id, type)

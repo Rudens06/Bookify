@@ -56,6 +56,7 @@ defmodule BookifyWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{BookifyWeb.Plugs.Auth, :require_authenticated_user}] do
+      live "/accounts/show", AccountLive.Show
     end
 
     delete "/accounts/logout", UserSessionController, :delete

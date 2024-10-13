@@ -22,6 +22,7 @@ defmodule Bookify.Users.User do
     field :hashed_password, :string, redact: true
     field :roles, {:array, :string}, default: []
     field :last_login, :utc_datetime
+    field :public, :boolean, default: true
     has_many :reviews, Review
 
     timestamps()
