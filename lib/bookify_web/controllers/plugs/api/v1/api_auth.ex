@@ -2,15 +2,19 @@ defmodule BookifyWeb.Plugs.Api.V1.AuthenticateApi do
   import Phoenix.Controller
   import Plug.Conn
 
-  alias Bookify.Auth
+  alias Bookify.Users
+  alias Bookify.Auth.UserToken
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
     token =
-      get_req_header(conn, "Authorization") |> List.first() |> String.trim_leading("Bearer ")
+      get_req_header(conn, "Authorization")
+      |> List.first()
+      |> String.trim_leading("Bearer ")
+      |> UserToken.decode_token()
 
-    case Auth.get_user_by_token(token, :api) do
+    case Users.get_user_by_token(token, :api) do
       nil ->
         conn
         |> put_status(:unauthorized)

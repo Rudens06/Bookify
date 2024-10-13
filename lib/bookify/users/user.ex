@@ -4,6 +4,9 @@ defmodule Bookify.Users.User do
   alias Bookify.Utils.GenId
   alias Bookify.Reviews.Review
 
+  @login_fields [:email, :password]
+  @required_login_fields [:email, :password]
+
   @register_fields [:name, :email, :password, :password_confirmation]
   @required_register_fields [:name, :email, :password, :password_confirmation]
   @update_fields [:username, :name]
@@ -29,16 +32,29 @@ defmodule Bookify.Users.User do
     |> cast(attrs, @update_fields)
   end
 
-  def registration_changeset(attrs \\ %{}) do
-    new()
+  def login_changeset(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, @login_fields)
+    |> validate_required(@required_login_fields)
+    |> update_last_login()
+  end
+
+  def registration_changeset(user, attrs \\ %{}) do
+    user
     |> cast(attrs, @register_fields)
     |> validate_required(@required_register_fields)
+    |> put_public_id()
     |> hash_password()
     |> update_last_login()
   end
 
-  defp new() do
-    %__MODULE__{public_id: GenId.generate()}
+  defp put_public_id(changeset) do
+    changeset
+    |> put_change(:public_id, GenId.generate())
+  end
+
+  def valid_password?(password, hashed_password) do
+    Bcrypt.verify_pass(password, hashed_password)
   end
 
   defp hash_password(changeset) do

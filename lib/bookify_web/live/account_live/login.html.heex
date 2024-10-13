@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-md rounded-lg border p-10 shadow-lg">
   <.header class="text-center">
-    Register for an account
+    Log In
     <:subtitle>
-      Already registered?
-      <.link navigate={~p"/accounts/login"} class="font-semibold text-brand hover:underline">
-        Log in
+      Dont Have an Account?
+      <.link navigate={~p"/accounts/register"} class="font-semibold text-brand hover:underline">
+        Register
       </.link>
-      to your account now.
+      an Account Now!
     </:subtitle>
   </.header>
 
@@ -17,17 +17,10 @@
     phx-trigger-action={@trigger_submit}
     method="post"
   >
-    <.input field={@form[:name]} type="text" label="Name" placeholder="Name" />
     <.input field={@form[:email]} type="text" label="Email" placeholder="email@exmple.com" />
     <.input field={@form[:password]} type="password" label="Password" placeholder="Password" />
-    <.input
-      field={@form[:password_confirmation]}
-      type="password"
-      label="Confirm Password"
-      placeholder="Password"
-    />
     <.button phx-disable-with="Saving..." class="my-4">
-      Register
+      Log In
     </.button>
   </.form>
 </div>

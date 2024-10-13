@@ -5,23 +5,25 @@ defmodule BookifyWeb.AccountLive.Register do
   alias Bookify.Users
 
   def mount(_params, _session, socket) do
-    changeset = User.registration_changeset()
+    changeset = User.registration_changeset(%User{})
 
-    socket = assign(socket, :form, to_form(changeset))
+    socket = assign(socket, form: to_form(changeset), trigger_submit: false)
 
     {:ok, socket}
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
-    case Users.create_user(user_params) do
+    case Users.create_user(%User{}, user_params) do
       {:error, changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}
 
-      {:ok, _user} ->
+      {:ok, user} ->
+        changeset = User.registration_changeset(user)
+
         socket =
           socket
           |> put_flash(:info, "User registered successfully!")
-          |> push_redirect(to: ~p"/")
+          |> assign(trigger_submit: true, from: to_form(changeset))
 
         {:noreply, socket}
     end

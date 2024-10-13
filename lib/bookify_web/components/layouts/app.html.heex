@@ -77,27 +77,28 @@
       aria-labelledby="hs-navbar-example-collapse"
     >
       <div class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:ps-5">
-        <a class="font-medium text-blue-500 focus:outline-none" href="#" aria-current="page">
-          Landing
-        </a>
-        <a
-          class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-          href="#"
-        >
-          Account
-        </a>
-        <a
-          class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-          href="#"
-        >
-          Work
-        </a>
-        <a
-          class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-          href="#"
-        >
-          Blog
-        </a>
+        <%= if @current_user do %>
+          <.link
+            href={~p"/accounts/logout"}
+            class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+            method="delete"
+          >
+            Log out
+          </.link>
+        <% else %>
+          <.link
+            navigate={~p"/accounts/login"}
+            class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+          >
+            Log in
+          </.link>
+          <.link
+            navigate={~p"/accounts/register"}
+            class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+          >
+            Register
+          </.link>
+        <% end %>
       </div>
     </div>
   </nav>

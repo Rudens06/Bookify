@@ -52,7 +52,7 @@ defmodule BookifyWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {BookifyWeb.Layouts, :app}
+        layout: {BookifyWeb.Layouts, "app.html"}
 
       unquote(html_helpers())
     end
