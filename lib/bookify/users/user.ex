@@ -11,6 +11,8 @@ defmodule Bookify.Users.User do
   @required_register_fields [:name, :email, :password, :password_confirmation]
   @update_fields [:username, :name]
 
+  @admin_role "admin"
+
   schema("users") do
     field :public_id, :string
     field :name, :string
@@ -57,6 +59,8 @@ defmodule Bookify.Users.User do
   def valid_password?(password, hashed_password) do
     Bcrypt.verify_pass(password, hashed_password)
   end
+
+  def admin_role(), do: @admin_role
 
   defp hash_password(changeset) do
     password = get_field(changeset, :password)

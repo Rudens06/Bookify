@@ -1,7 +1,6 @@
 defmodule BookifyWeb.Router do
   use BookifyWeb, :router
   import BookifyWeb.Plugs.Auth
-
   alias BookifyWeb.Plugs.Api.V1.AuthenticateApi
 
   pipeline :browser do

@@ -6,6 +6,7 @@ defmodule BookifyWeb.Plugs.Auth do
 
   alias Phoenix.LiveView
   alias Bookify.Users
+  alias Bookify.Users.User
 
   def log_in_user(conn, user) do
     Users.invalidate_tokens(user, :session)
@@ -80,6 +81,12 @@ defmodule BookifyWeb.Plugs.Auth do
     else
       {:halt, LiveView.redirect(socket, to: login_path())}
     end
+  end
+
+  def user_is_admin?(nil), do: false
+
+  def user_is_admin?(user) do
+    User.admin_role() in user.roles
   end
 
   defp mount_current_user(socket, session) do
