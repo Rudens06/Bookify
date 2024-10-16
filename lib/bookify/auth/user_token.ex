@@ -17,6 +17,7 @@ defmodule Bookify.Auth.UserToken do
 
   schema("user_tokens") do
     field :token, :string
+    field :title, :string
     field :expires_at, :utc_datetime
     field :context, :string
     belongs_to :user, User
