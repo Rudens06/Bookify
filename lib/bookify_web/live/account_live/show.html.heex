@@ -31,6 +31,15 @@
         Generate New Token
       </.button>
 
+      <.button
+        class="mt-2"
+        phx-click="delete_all_tokens"
+        data-confirm="Are you sure?"
+        class="bg-red-500"
+      >
+        Delete All Tokens
+      </.button>
+
       <div id="api-keys-container">
         <.table id="api-keys-table" rows={@streams.api_tokens}>
           <:col :let={{_id, token}} label="Key"><%= token.token %></:col>
@@ -44,6 +53,17 @@
               N/A
             <% end %>
           </:col>
+          <:action :let={{_id, token}}>
+            <.button
+              class="mt-2"
+              phx-click="delete_token"
+              data-confirm="Are you sure?"
+              phx-value-id={token.id}
+              class="bg-red-500"
+            >
+              Delete
+            </.button>
+          </:action>
         </.table>
       </div>
     <% end %>

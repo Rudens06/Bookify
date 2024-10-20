@@ -37,7 +37,7 @@ defmodule Bookify.Users do
     {token, user_token} =
       UserToken.build_token(user_id, type)
 
-    Repo.insert!(user_token)
+    user_token = Repo.insert!(user_token)
     {token, user_token}
   end
 
@@ -48,11 +48,19 @@ defmodule Bookify.Users do
     |> Repo.all()
   end
 
-  def invalidate_token(token, type) do
-    context = UserToken.get_context(type)
+  def get_token_by_id(user, token_id) do
+    user_token_id_query(user.id, token_id)
+    |> Repo.one()
+  end
 
-    UserToken.by_token_and_context_query(token, context)
-    |> Repo.delete_all()
+  def delete_token_by_id(user, token_id) do
+    user_token_id_query(user.id, token_id)
+    |> Repo.delete!()
+  end
+
+  def invalidate_token(token) do
+    Repo.get_by(UserToken, token: token)
+    |> Repo.delete()
   end
 
   def invalidate_tokens(user, type) do
@@ -78,6 +86,11 @@ defmodule Bookify.Users do
     else
       nil
     end
+  end
+
+  defp user_token_id_query(user_id, token_id) do
+    from t in UserToken,
+      where: t.id == ^token_id and t.user_id == ^user_id
   end
 
   defp valid_token_context_query(token, context) do

@@ -9,7 +9,6 @@ defmodule BookifyWeb.Plugs.Auth do
   alias Bookify.Users.User
 
   def log_in_user(conn, user) do
-    Users.invalidate_tokens(user, :session)
     {token, _user_token} = Users.generate_token(user.id, :session)
     user_return_to = get_session(conn, :user_return_to)
 
@@ -23,7 +22,7 @@ defmodule BookifyWeb.Plugs.Auth do
     token = get_session(conn, :user_token)
     live_socket_id = get_session(conn, :live_socket_id)
 
-    token && Users.invalidate_token(token, :session)
+    token && Users.invalidate_token(token)
     live_socket_id && terminate_live_view_sessions(live_socket_id)
 
     conn
