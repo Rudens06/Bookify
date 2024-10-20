@@ -5,7 +5,7 @@ defmodule Bookify.MixProject do
     [
       app: :bookify,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -32,16 +32,15 @@ defmodule Bookify.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.0"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.6"},
+      {:phoenix, "~> 1.7.14"},
+      {:phoenix_ecto, "~> 4.6.2"},
+      {:ecto_sql, "~> 3.12"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_reload, "~> 1.5.3", only: :dev},
+      {:phoenix_live_view, "~> 1.0.0-rc.0"},
       {:heroicons, "~> 0.5"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},

@@ -27,7 +27,7 @@ defmodule BookifyWeb.AccountLive.Show do
 
   def handle_event("delete_all_tokens", _params, socket) do
     Users.invalidate_tokens(current_user(socket), :api)
-    {:noreply, stream(socket, :api_tokens, [])}
+    {:noreply, stream(socket, :api_tokens, [], reset: true)}
   end
 
   def handle_event("delete_token", %{"id" => id}, socket) do

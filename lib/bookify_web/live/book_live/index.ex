@@ -6,6 +6,6 @@ defmodule BookifyWeb.BookLive.Index do
   def mount(_params, _session, socket) do
     books = Books.list_books([:author])
 
-    {:ok, assign(socket, :books, books)}
+    {:ok, stream(socket, :books, books)}
   end
 end

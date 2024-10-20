@@ -1,5 +1,9 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-  <div :for={book <- @books} class="m-5 transition-transform duration-400 hover:scale-105">
+  <div
+    :for={{dom_id, book} <- @streams.books}
+    id={dom_id}
+    class="m-5 transition-transform duration-400 hover:scale-105"
+  >
     <.link navigate={~p"/accounts/register"}>
       <img src={book.cover_image_url} class="h-96 drop-shadow-lg rounded-lg" />
       <div class="text-2xl font-bold font-serif mt-2"><%= book.title %></div>
