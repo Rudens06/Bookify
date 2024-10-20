@@ -10,7 +10,7 @@ defmodule BookifyWeb.Plugs.Auth do
 
   def log_in_user(conn, user) do
     Users.invalidate_tokens(user, :session)
-    token = Users.generate_token(user.id, :session)
+    {token, _user_token} = Users.generate_token(user.id, :session)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
@@ -120,6 +120,8 @@ defmodule BookifyWeb.Plugs.Auth do
     conn
     |> put_session(:user_return_to, current_path(conn))
   end
+
+  defp put_return_to(conn), do: conn
 
   defp authenticated_path(), do: ~p"/"
   defp login_path(), do: ~p"/accounts/login"

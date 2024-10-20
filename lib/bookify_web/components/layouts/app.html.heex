@@ -85,6 +85,12 @@
           >
             Log out
           </.link>
+          <.link
+            href={~p"/accounts/show"}
+            class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+          >
+            Profile
+          </.link>
         <% else %>
           <.link
             navigate={~p"/accounts/login"}

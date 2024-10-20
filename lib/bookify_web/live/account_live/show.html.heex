@@ -1,5 +1,5 @@
 <span class="text-4xl">Profile</span>
-<div class="max-w-md mt-2 border rounded-md">
+<div class="min-w-max mt-2 border rounded-md">
   <div class="m-3">
     <div class="text-3xl mt-2">
       <%= @user.name %>
@@ -15,17 +15,37 @@
     <% end %>
 
     <%= if @user.id == @current_user.id do %>
-      <div class="text-red-500 font-bold">WARNING!</div>
-      <div class="text-red-500">Generating a new API key will invalidate the previous ones</div>
-      <div class="text-red-500">API key will be show only once</div>
-
-      <.button class="mt-2" data={[confirm: "Are you sure?"]} phx-click="gen_api_key">
-        Generate API key
+      <.button
+        class="mt-2"
+        data-confirm="Are you sure?"
+        phx-click={JS.show(to: "#api-keys-container")}
+      >
+        Show Tokens
       </.button>
 
-      <%= if @api_key do %>
-        <div>API key: <%= @api_key %></div>
-      <% end %>
+      <.button class="mt-2" phx-click={JS.hide(to: "#api-keys-container")}>
+        Hide Tokens
+      </.button>
+
+      <.button class="mt-2" phx-click="gen_token">
+        Generate New Token
+      </.button>
+
+      <div id="api-keys-container">
+        <.table id="api-keys-table" rows={@streams.api_tokens}>
+          <:col :let={{_id, token}} label="Key"><%= token.token %></:col>
+          <:col :let={{_id, token}} label="Name"><%= token.title %></:col>
+          <:col :let={{_id, token}} label="Context"><%= token.context %></:col>
+          <:col :let={{_id, token}} label="Expires At"><%= token.expires_at %></:col>
+          <:col :let={{_id, token}} label="Expires in">
+            <%= if !is_nil(token.expires_at) do %>
+              <%= from_today(token.expires_at, :day) %> days
+            <% else %>
+              N/A
+            <% end %>
+          </:col>
+        </.table>
+      </div>
     <% end %>
   </div>
 </div>

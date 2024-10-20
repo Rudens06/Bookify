@@ -29,8 +29,7 @@ defmodule Bookify.Users do
     Repo.delete(user)
   end
 
-  def generate_new_api_key(user) do
-    invalidate_tokens(user, :api)
+  def generate_new_api_token(user) do
     generate_token(user.id, :api)
   end
 
@@ -39,7 +38,14 @@ defmodule Bookify.Users do
       UserToken.build_token(user_id, type)
 
     Repo.insert!(user_token)
-    token
+    {token, user_token}
+  end
+
+  def get_users_tokens(user, type) when type in [:api, :session] do
+    context = UserToken.get_context(type)
+
+    user_token_context_query(user.id, context)
+    |> Repo.all()
   end
 
   def invalidate_token(token, type) do
@@ -59,7 +65,7 @@ defmodule Bookify.Users do
   def get_user_by_token(token, type) do
     context = UserToken.get_context(type)
 
-    token_context_query(token, context)
+    valid_token_context_query(token, context)
     |> user_query()
     |> Repo.one()
   end
@@ -74,9 +80,14 @@ defmodule Bookify.Users do
     end
   end
 
-  defp token_context_query(token, context) do
+  defp valid_token_context_query(token, context) do
     from t in UserToken,
       where: t.token == ^token and t.context == ^context and t.expires_at > ^DateTime.utc_now()
+  end
+
+  defp user_token_context_query(user_id, context) do
+    from t in UserToken,
+      where: t.context == ^context and t.user_id == ^user_id
   end
 
   defp user_query(query) do

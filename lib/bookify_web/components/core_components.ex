@@ -386,8 +386,8 @@ defmodule BookifyWeb.CoreComponents do
         class={[
           "mt-2 block w-full rounded-lg border-zinc-300 py-[7px] px-[11px]",
           "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
-          "phx-no-feedback:ring-zinc-300 phx-no-feedback:focus:border-transparent phx-no-feedback:focus:ring-2 phx-no-feedback:focus:ring-yellow-400",
-          "ring-zinc-300 focus:border-transparent focus:ring-2 focus:ring-yellow-400",
+          "phx-no-feedback:ring-zinc-300 phx-no-feedback:focus:border-transparent phx-no-feedback:focus:ring-2 phx-no-feedback:focus:ring-violet-500",
+          "ring-zinc-300 focus:border-transparent focus:ring-2 focus:ring-violet-500",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
         {@rest}
