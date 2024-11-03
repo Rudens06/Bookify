@@ -8,10 +8,19 @@ defmodule BookifyWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
-  def call(conn, {:error, :not_found}) do
+  def call(conn, {:error, {:not_found, message}}) do
     conn
     |> put_status(:not_found)
     |> put_view(html: BookifyWeb.ErrorHTML, json: BookifyWeb.ErrorJSON)
-    |> render(:"404")
+    |> render(:"404", %{message: message})
+  end
+
+  def call(conn, {:error, {:forbidden, message}}) do
+    message = message || "Forbidden access"
+
+    conn
+    |> put_status(:forbidden)
+    |> put_view(html: BookifyWeb.ErrorHTML, json: BookifyWeb.ErrorJSON)
+    |> render(:"403", %{message: message})
   end
 end

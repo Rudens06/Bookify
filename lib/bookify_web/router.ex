@@ -28,6 +28,12 @@ defmodule BookifyWeb.Router do
     resources "/users", UserController, only: [:update, :index]
     get "/users/current", UserController, :current
 
+    # Lists
+    get "/users/:user_id/lists", ListController, :index
+    post "/users/lists", ListController, :create
+    delete "/users/lists/:id", ListController, :delete
+    patch "/users/lists/:id", ListController, :update
+
     get "/books", BookController, :index
     get "/books/:isbn", BookController, :show
     post "/books/:isbn", BookController, :create
