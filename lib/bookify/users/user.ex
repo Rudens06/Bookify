@@ -46,6 +46,7 @@ defmodule Bookify.Users.User do
     user
     |> cast(attrs, @register_fields)
     |> validate_required(@required_register_fields)
+    |> unique_constraint(:email)
     |> put_public_id()
     |> hash_password()
     |> update_last_login()
