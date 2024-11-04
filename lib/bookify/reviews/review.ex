@@ -3,7 +3,7 @@ defmodule Bookify.Reviews.Review do
   import Ecto.Changeset
 
   alias Bookify.Books.Book
-  alias Bookfy.Users.User
+  alias Bookify.Users.User
 
   @cast_fields [:title, :body, :rating]
   @required_fields [:title, :rating]
