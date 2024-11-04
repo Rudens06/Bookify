@@ -3,9 +3,14 @@ defmodule BookifyWeb.Api.V1.ListController do
 
   import Bookify.Utils.User
 
+  alias Bookify.Lists.ListsBooks
   alias Bookify.Lists
   alias Bookify.Lists.List
+  alias Bookify.Books
   alias Bookify.Users
+  alias BookifyWeb.Plugs.EnsureListOwner
+
+  plug EnsureListOwner when action in [:update, :delete, :add_book, :update_book, :remove_book]
 
   action_fallback BookifyWeb.FallbackController
 
@@ -30,12 +35,12 @@ defmodule BookifyWeb.Api.V1.ListController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"list_id" => id}) do
     list = Lists.get_list!(id)
     render(conn, :show, list: list)
   end
 
-  def update(conn, %{"id" => id, "list" => list_params}) do
+  def update(conn, %{"list_id" => id, "list" => list_params}) do
     current_user_id = current_user(conn).id
 
     case Lists.get_list!(id) do
@@ -45,20 +50,47 @@ defmodule BookifyWeb.Api.V1.ListController do
         end
 
       _ ->
-        nil
+        {:error, {:not_found, "List not found"}}
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"list_id" => id}) do
     list = Lists.get_list!(id)
-    current_user = current_user(conn)
 
-    if list.user_id == current_user.id do
-      with {:ok, %List{}} <- Lists.delete_list(list) do
-        send_resp(conn, :no_content, "")
-      end
-    else
-      {:error, {:not_found, "List not found"}}
+    with {:ok, %List{}} <- Lists.delete_list(list) do
+      send_resp(conn, :no_content, "")
+    end
+  end
+
+  def add_book(conn, %{"book_id" => book_id, "list_book" => list_book}) do
+    book = Books.get_book!(book_id)
+    list = conn.assigns.list
+
+    with {:ok, list_book = %ListsBooks{}} <- Lists.add_book(list, book, list_book) do
+      render(conn, :add_book, %{list_book: list_book})
+    end
+  end
+
+  def update_book(conn, %{
+        "list_id" => list_id,
+        "book_id" => book_id,
+        "list_book" => list_book_params
+      }) do
+    list_book = Lists.get_list_book(list_id, book_id)
+
+    with {:ok, list_book = %ListsBooks{}} <- Lists.update_book_list(list_book, list_book_params) do
+      render(conn, :update_book, %{list_book: list_book})
+    end
+  end
+
+  def remove_book(conn, %{
+        "list_id" => list_id,
+        "book_id" => book_id
+      }) do
+    list_book = Lists.get_list_book(list_id, book_id)
+
+    with {:ok, %ListsBooks{}} <- Lists.remove_book(list_book) do
+      send_resp(conn, :no_content, "")
     end
   end
 end

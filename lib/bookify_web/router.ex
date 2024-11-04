@@ -31,15 +31,21 @@ defmodule BookifyWeb.Router do
     # Lists
     get "/users/:user_id/lists", ListController, :index
     post "/users/lists", ListController, :create
-    delete "/users/lists/:id", ListController, :delete
-    patch "/users/lists/:id", ListController, :update
+    delete "/users/lists/:list_id", ListController, :delete
+    patch "/users/lists/:list_id", ListController, :update
 
+    post "/users/lists/:list_id/:book_id", ListController, :add_book
+    patch "/users/lists/:list_id/:book_id", ListController, :update_book
+    delete "/users/lists/:list_id/:book_id", ListController, :remove_book
+
+    # Books
     get "/books", BookController, :index
     get "/books/:isbn", BookController, :show
     post "/books/:isbn", BookController, :create
     patch "/books/:isbn", BookController, :update
     delete "/books/:isbn", BookController, :delete
 
+    # Reviews
     get "/books/:isbn/reviews", ReviewController, :index
     get "/books/:isbn/reviews/:id", ReviewController, :show
     post "/books/:isbn/reviews", ReviewController, :create

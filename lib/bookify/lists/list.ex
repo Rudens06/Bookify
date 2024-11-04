@@ -3,6 +3,8 @@ defmodule Bookify.Lists.List do
   import Ecto.Changeset
 
   alias Bookify.Users.User
+  alias Bookify.Lists.ListsBooks
+  alias Bookify.Books.Book
 
   @cast_fields [:name, :description]
   @required_fields [:name]
@@ -11,6 +13,7 @@ defmodule Bookify.Lists.List do
     field :name, :string
     field :description, :string
     belongs_to :user, User
+    many_to_many :books, Book, join_through: ListsBooks
 
     timestamps()
   end
