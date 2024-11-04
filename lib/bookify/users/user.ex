@@ -39,6 +39,7 @@ defmodule Bookify.Users.User do
     user
     |> cast(attrs, @login_fields)
     |> validate_required(@required_login_fields)
+    |> validate_email()
     |> update_last_login()
   end
 
@@ -46,7 +47,9 @@ defmodule Bookify.Users.User do
     user
     |> cast(attrs, @register_fields)
     |> validate_required(@required_register_fields)
-    |> unique_constraint(:email)
+    |> validate_email()
+    |> validate_password()
+    |> validate_confirmation(:password, message: "Passwords do not match")
     |> put_public_id()
     |> hash_password()
     |> update_last_login()
@@ -81,5 +84,44 @@ defmodule Bookify.Users.User do
 
     changeset
     |> put_change(:last_login, timestamp)
+  end
+
+  defp validate_password(changeset) do
+    changeset
+    |> validate_length(
+      :password,
+      min: 8,
+      message: "Must be at least 8 characters"
+    )
+    |> validate_length(
+      :password,
+      max: 72,
+      message: "Must not be longer than 72 characters"
+    )
+    |> validate_format(:password, ~r/[a-z]/,
+      message: "Must contain at least one lower case character"
+    )
+    |> validate_format(:password, ~r/[A-Z]/,
+      message: "Must contain at least one upper case character"
+    )
+    |> validate_format(:password, ~r/[0-9]/, message: "Must contain at least one digit")
+    |> validate_format(:password, ~r/[*.!@#$%^&(){}[:;<>,.?]/,
+      message: "Must contain at least one symbol"
+    )
+  end
+
+  def validate_email(changeset) do
+    changeset
+    |> unique_constraint(:email)
+    |> validate_format(
+      :email,
+      ~r/^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/,
+      message: "invalid email address"
+    )
+    |> validate_length(
+      :email,
+      max: 160,
+      message: "should be at most 160 characters long"
+    )
   end
 end
