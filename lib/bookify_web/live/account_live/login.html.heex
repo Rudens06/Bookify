@@ -1,0 +1,26 @@
+<div class="mx-auto max-w-md rounded-lg border p-10 shadow-lg">
+  <.header class="text-center">
+    Log In
+    <:subtitle>
+      Dont Have an Account?
+      <.link navigate={~p"/accounts/register"} class="font-semibold text-brand hover:underline">
+        Register
+      </.link>
+      an Account Now!
+    </:subtitle>
+  </.header>
+
+  <.form
+    for={@form}
+    phx-submit="save"
+    action={~p"/accounts/login"}
+    phx-trigger-action={@trigger_submit}
+    method="post"
+  >
+    <.input field={@form[:email]} type="text" label="Email" placeholder="email@exmple.com" />
+    <.input field={@form[:password]} type="password" label="Password" placeholder="Password" />
+    <.button phx-disable-with="Processing..." class="my-4">
+      Log In
+    </.button>
+  </.form>
+</div>

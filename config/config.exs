@@ -9,7 +9,7 @@ import Config
 
 config :bookify,
   ecto_repos: [Bookify.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: false]
 
 # Configures the endpoint
 config :bookify, BookifyWeb.Endpoint,
