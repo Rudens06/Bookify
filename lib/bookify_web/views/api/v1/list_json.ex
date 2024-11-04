@@ -1,5 +1,5 @@
 defmodule BookifyWeb.Api.V1.ListJSON do
-  alias Bookify.Lists.ListsBooks
+  alias Bookify.Lists.ListBook
   alias Bookify.Lists.List
 
   @list_public_keys [:id, :name, :description]
@@ -25,7 +25,7 @@ defmodule BookifyWeb.Api.V1.ListJSON do
     Map.take(list, @list_public_keys)
   end
 
-  defp list_book_data(%ListsBooks{} = list_book) do
+  defp list_book_data(%ListBook{} = list_book) do
     Map.take(list_book, @list_book_public_keys)
   end
 end

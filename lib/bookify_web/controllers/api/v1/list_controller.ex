@@ -3,12 +3,17 @@ defmodule BookifyWeb.Api.V1.ListController do
 
   import Bookify.Utils.User
 
-  alias Bookify.Lists.ListsBooks
-  alias Bookify.Lists
+  alias Bookify.Lists.ListBook
   alias Bookify.Lists.List
+  alias Bookify.Books.Book
+  alias Bookify.Users.User
+  alias Bookify.Lists
   alias Bookify.Books
   alias Bookify.Users
+
   alias BookifyWeb.Plugs.EnsureListOwner
+
+  @user_private_message "User is private"
 
   plug EnsureListOwner when action in [:update, :delete, :add_book, :update_book, :remove_book]
 
@@ -16,14 +21,19 @@ defmodule BookifyWeb.Api.V1.ListController do
 
   def index(conn, %{"user_id" => user_id}) do
     current_user = current_user(conn)
-    user = Users.get_user_by_public_id!(user_id)
 
-    if user.public or user.id == current_user.id do
-      lists = Lists.lists_by_user_id(user.id)
+    case Users.get_user_by_public_id(user_id) do
+      %User{} = user ->
+        if user.public or user.id == current_user.id do
+          lists = Lists.lists_by_user_id(user.id)
 
-      render(conn, :index, lists: lists)
-    else
-      {:error, {:forbidden, "User is private!"}}
+          render(conn, :index, lists: lists)
+        else
+          user_private_error()
+        end
+
+      error ->
+        error
     end
   end
 
@@ -35,39 +45,38 @@ defmodule BookifyWeb.Api.V1.ListController do
     end
   end
 
-  def show(conn, %{"list_id" => id}) do
-    list = Lists.get_list!(id)
+  def show(conn, _params) do
+    list = conn.assigns.list
     render(conn, :show, list: list)
   end
 
-  def update(conn, %{"list_id" => id, "list" => list_params}) do
-    current_user_id = current_user(conn).id
+  def update(conn, %{"list" => list_params}) do
+    list = conn.assigns.list
 
-    case Lists.get_list!(id) do
-      %List{user_id: ^current_user_id} = list ->
-        with {:ok, %List{} = updated_list} <- Lists.update_list(list, list_params) do
-          render(conn, :show, list: updated_list)
-        end
-
-      _ ->
-        {:error, {:not_found, "List not found"}}
+    with {:ok, %List{} = updated_list} <- Lists.update_list(list, list_params) do
+      render(conn, :show, list: updated_list)
     end
   end
 
-  def delete(conn, %{"list_id" => id}) do
-    list = Lists.get_list!(id)
+  def delete(conn, _params) do
+    list = conn.assigns.list
 
     with {:ok, %List{}} <- Lists.delete_list(list) do
       send_resp(conn, :no_content, "")
     end
   end
 
-  def add_book(conn, %{"book_id" => book_id, "list_book" => list_book}) do
-    book = Books.get_book!(book_id)
-    list = conn.assigns.list
+  def add_book(conn, %{"book_id" => book_id, "list_book" => list_book_params}) do
+    case Books.get_book(book_id) do
+      %Book{} = book ->
+        list = conn.assigns.list
 
-    with {:ok, list_book = %ListsBooks{}} <- Lists.add_book(list, book, list_book) do
-      render(conn, :add_book, %{list_book: list_book})
+        with {:ok, list_book = %ListBook{}} <- Lists.add_book(list, book, list_book_params) do
+          render(conn, :add_book, %{list_book: list_book})
+        end
+
+      error ->
+        error
     end
   end
 
@@ -76,10 +85,14 @@ defmodule BookifyWeb.Api.V1.ListController do
         "book_id" => book_id,
         "list_book" => list_book_params
       }) do
-    list_book = Lists.get_list_book(list_id, book_id)
+    case Lists.get_list_book(list_id, book_id) do
+      %ListBook{} = list_book ->
+        with {:ok, list_book = %ListBook{}} <- Lists.update_book_list(list_book, list_book_params) do
+          render(conn, :update_book, %{list_book: list_book})
+        end
 
-    with {:ok, list_book = %ListsBooks{}} <- Lists.update_book_list(list_book, list_book_params) do
-      render(conn, :update_book, %{list_book: list_book})
+      error ->
+        error
     end
   end
 
@@ -87,10 +100,18 @@ defmodule BookifyWeb.Api.V1.ListController do
         "list_id" => list_id,
         "book_id" => book_id
       }) do
-    list_book = Lists.get_list_book(list_id, book_id)
+    case Lists.get_list_book(list_id, book_id) do
+      %ListBook{} = list_book ->
+        with {:ok, %ListBook{}} <- Lists.remove_book(list_book) do
+          send_resp(conn, :no_content, "")
+        end
 
-    with {:ok, %ListsBooks{}} <- Lists.remove_book(list_book) do
-      send_resp(conn, :no_content, "")
+      error ->
+        error
     end
+  end
+
+  defp user_private_error() do
+    {:error, {:forbidden, @user_private_message}}
   end
 end

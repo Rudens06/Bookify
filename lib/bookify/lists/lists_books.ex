@@ -1,4 +1,4 @@
-defmodule Bookify.Lists.ListsBooks do
+defmodule Bookify.Lists.ListBook do
   use Ecto.Schema
   import Ecto.Changeset
 
