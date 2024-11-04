@@ -4,6 +4,8 @@ defmodule Bookify.Reviews do
 
   alias Bookify.Reviews.Review
 
+  @not_found_message "Review not found"
+
   def list_reviews(opts \\ []) do
     query =
       from(r in Review)
@@ -23,7 +25,15 @@ defmodule Bookify.Reviews do
     Repo.all(query)
   end
 
-  def get_review!(id), do: Repo.get!(Review, id)
+  def get_review(id) do
+    case Repo.get(Review, id) do
+      nil ->
+        not_found()
+
+      review ->
+        review
+    end
+  end
 
   def create_review(book, user, attrs \\ %{}) do
     Review.create_changeset(book, user, attrs)
@@ -42,5 +52,9 @@ defmodule Bookify.Reviews do
 
   def change_review(%Review{} = review, attrs \\ %{}) do
     Review.changeset(review, attrs)
+  end
+
+  defp not_found() do
+    {:error, {:not_found, @not_found_message}}
   end
 end

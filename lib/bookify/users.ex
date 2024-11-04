@@ -4,13 +4,23 @@ defmodule Bookify.Users do
   alias Bookify.Users.User
   alias Bookify.Auth.UserToken
 
+  @not_found_message "User not found"
+
   def list_users do
     Repo.all(User)
   end
 
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user(id), do: Repo.get(User, id)
 
-  def get_user_by_public_id!(id), do: Repo.get_by!(User, public_id: id)
+  def get_user_by_public_id(id) do
+    case Repo.get_by(User, public_id: id) do
+      nil ->
+        not_found()
+
+      user ->
+        user
+    end
+  end
 
   def get_user_by_email(email), do: Repo.get_by(User, email: email)
 
@@ -107,5 +117,9 @@ defmodule Bookify.Users do
     from t in query,
       join: u in assoc(t, :user),
       select: u
+  end
+
+  defp not_found() do
+    {:error, {:not_found, @not_found_message}}
   end
 end
