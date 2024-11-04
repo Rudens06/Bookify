@@ -20,23 +20,36 @@ defmodule BookifyWeb.Api.V1.AuthorController do
   end
 
   def show(conn, %{"id" => id}) do
-    author = Authors.get_author!(id)
-    render(conn, :show, author: author)
+    case Authors.get_author(id) do
+      %Author{} = author ->
+        render(conn, :show, author: author)
+
+      error ->
+        error
+    end
   end
 
   def update(conn, %{"id" => id, "author" => author_params}) do
-    author = Authors.get_author!(id)
+    case Authors.get_author(id) do
+      %Author{} = author ->
+        with {:ok, %Author{} = author} <- Authors.update_author(author, author_params) do
+          render(conn, :show, author: author)
+        end
 
-    with {:ok, %Author{} = author} <- Authors.update_author(author, author_params) do
-      render(conn, :show, author: author)
+      error ->
+        error
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    author = Authors.get_author!(id)
+    case Authors.get_author(id) do
+      %Author{} = author ->
+        with {:ok, %Author{}} <- Authors.delete_author(author) do
+          send_resp(conn, :no_content, "")
+        end
 
-    with {:ok, %Author{}} <- Authors.delete_author(author) do
-      send_resp(conn, :no_content, "")
+      error ->
+        error
     end
   end
 end
