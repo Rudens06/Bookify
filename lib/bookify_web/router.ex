@@ -40,8 +40,8 @@ defmodule BookifyWeb.Router do
 
     # Books
     get "/books", BookController, :index
+    post "/books", BookController, :create
     get "/books/:isbn", BookController, :show
-    post "/books/:isbn", BookController, :create
     patch "/books/:isbn", BookController, :update
     delete "/books/:isbn", BookController, :delete
 
