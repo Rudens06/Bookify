@@ -12,7 +12,7 @@ defmodule BookifyWeb.Plugs.Api.V1.RequireAdmin do
     else
       conn
       |> put_status(:forbidden)
-      |> json(%{error: "Not allowed!"})
+      |> json(%{errors: [%{detail: "Not allowed!"}]})
       |> halt()
     end
   end

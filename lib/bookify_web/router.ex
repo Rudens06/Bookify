@@ -2,6 +2,7 @@ defmodule BookifyWeb.Router do
   use BookifyWeb, :router
   import BookifyWeb.Plugs.Auth
   alias BookifyWeb.Plugs.Api.V1.AuthenticateApi
+  alias BookifyWeb.Plugs.Api.V1.RequireAdmin
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -21,11 +22,17 @@ defmodule BookifyWeb.Router do
     plug AuthenticateApi
   end
 
+  pipeline :require_admin do
+    plug RequireAdmin
+  end
+
   scope "/api/v1", BookifyWeb.Api.V1 do
     pipe_through [:api, :authenticated_api]
 
-    resources "/authors", AuthorController, except: [:new, :edit]
-    resources "/users", UserController, only: [:update, :index]
+    get "/authors", AuthorController, :index
+    get "/authors/:id", AuthorController, :show
+
+    patch "/users", UserController, :update
     get "/users/current", UserController, :current
 
     # Lists
@@ -40,10 +47,7 @@ defmodule BookifyWeb.Router do
 
     # Books
     get "/books", BookController, :index
-    post "/books", BookController, :create
     get "/books/:isbn", BookController, :show
-    patch "/books/:isbn", BookController, :update
-    delete "/books/:isbn", BookController, :delete
 
     # Reviews
     get "/books/:isbn/reviews", ReviewController, :index
@@ -51,6 +55,19 @@ defmodule BookifyWeb.Router do
     post "/books/:isbn/reviews", ReviewController, :create
     patch "/books/:isbn/reviews/:id", ReviewController, :update
     delete "/books/:isbn/reviews/:id", ReviewController, :delete
+
+    scope "/" do
+      pipe_through :require_admin
+      get "/users", UserController, :index
+
+      post "/books", BookController, :create
+      delete "/books/:isbn", BookController, :delete
+      patch "/books/:isbn", BookController, :update
+
+      post "/authors", AuthorController, :create
+      delete "/authors/:id", AuthorController, :delete
+      patch "/authors/:id", AuthorController, :update
+    end
   end
 
   scope "/", BookifyWeb do
