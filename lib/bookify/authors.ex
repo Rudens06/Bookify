@@ -8,8 +8,8 @@ defmodule Bookify.Authors do
     Repo.all(Author)
   end
 
-  def get_author(id) do
-    case Repo.get(Author, id) do
+  def get_author(id, preloads \\ []) do
+    case Repo.get(Author, id) |> Repo.preload(preloads) do
       nil ->
         not_found()
 
