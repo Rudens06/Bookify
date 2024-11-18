@@ -17,7 +17,7 @@ defmodule BookifyWeb.Api.V1.ReviewController do
   def index(conn, %{"isbn" => isbn}) do
     case Books.get_book_by_isbn(isbn) do
       %Book{} = book ->
-        reviews = Reviews.list_reviews(book_id: book.id)
+        reviews = Reviews.list_book_reviews(book.id)
         render(conn, :index, reviews: reviews)
 
       error ->

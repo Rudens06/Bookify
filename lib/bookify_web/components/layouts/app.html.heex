@@ -77,6 +77,18 @@
       aria-labelledby="hs-navbar-example-collapse"
     >
       <div class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:ps-5">
+        <.link
+          href={~p"/"}
+          class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+        >
+          Books
+        </.link>
+        <.link
+          href={~p"/authors"}
+          class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+        >
+          Authors
+        </.link>
         <%= if @current_user do %>
           <.link
             href={~p"/accounts/logout"}

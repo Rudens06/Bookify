@@ -1,0 +1,12 @@
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <div
+    :for={{dom_id, author} <- @streams.authors}
+    id={dom_id}
+    class="m-5 transition-transform duration-400 hover:scale-105"
+  >
+    <.link navigate={~p"/authors/#{author.id}"}>
+      <img src={author.image_url} class="h-96 drop-shadow-lg rounded-lg" />
+      <div class="text-2xl font-bold font-serif mt-2"><%= author.name %></div>
+    </.link>
+  </div>
+</div>

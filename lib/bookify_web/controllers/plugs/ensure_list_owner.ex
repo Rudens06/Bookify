@@ -19,7 +19,7 @@ defmodule BookifyWeb.Plugs.EnsureListOwner do
         else
           conn
           |> put_status(:forbidden)
-          |> json(%{errors: %{detail: "You are not authorized to access this list."}})
+          |> json(%{errors: [%{detail: "You are not authorized to access this list."}]})
           |> halt()
         end
 

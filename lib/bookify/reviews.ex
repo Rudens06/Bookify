@@ -6,23 +6,22 @@ defmodule Bookify.Reviews do
 
   @not_found_message "Review not found"
 
-  def list_reviews(opts \\ []) do
-    query =
-      from(r in Review)
+  def list_reviews() do
+    Repo.all(Review)
+  end
 
-    query =
-      case Keyword.get(opts, :book_id) do
-        nil -> query
-        book_id -> from r in query, where: r.book_id == ^book_id
-      end
+  def list_user_reviews(user_id, preloads \\ []) do
+    Review
+    |> where(user_id: ^user_id)
+    |> Repo.preload(preloads)
+    |> Repo.all()
+  end
 
-    query =
-      case Keyword.get(opts, :user_id) do
-        nil -> query
-        user_id -> from r in query, where: r.user_id == ^user_id
-      end
-
-    Repo.all(query)
+  def list_book_reviews(book_id) do
+    Review
+    |> where(book_id: ^book_id)
+    |> Repo.all()
+    |> Repo.preload([:user])
   end
 
   def get_review(id) do

@@ -5,7 +5,7 @@ defmodule Bookify.Authors.Author do
   alias Bookify.Books.Book
 
   @cast_fields [:name, :birth_year, :death_year, :biography, :image_url, :wikipedia_url]
-  @required_fields [:name]
+  @required_fields [:name, :birth_year, :biography]
 
   schema "authors" do
     field :name, :string
