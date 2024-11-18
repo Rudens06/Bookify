@@ -3,23 +3,25 @@
   <div class="mt-4">
     <%= if @reviews do %>
       <%= for review <- @reviews do %>
-        <div class="p-4 mb-2 border border-gray-300 rounded-md flex justify-between items-start">
-          <div class="user-info">
-            <%= review.user.name %>
-          </div>
-          <div class="content">
-            <h4 class="text-lg font-semibold text-gray-900"><%= review.title %></h4>
-            <p class="text-gray-700"><%= review.body %></p>
-            <p class="text-sm mt-1 text-gray-500">
-              <strong>Rating:</strong> <%= review.rating %> / 5
-            </p>
+        <div class="p-4 mb-2 border-t border-gray-300 rounded-md flex justify-between items-start">
+          <div class="flex-1 mr-4">
+            <div class="user-info">
+              <%= review.user.name %>
+            </div>
+            <div class="content">
+              <h4 class="text-lg font-semibold text-gray-900"><%= review.title %></h4>
+              <p class="text-gray-700"><%= review.body %></p>
+              <p class="text-sm mt-1 text-gray-500">
+                <strong>Rating:</strong> <%= review.rating %> / 5
+              </p>
+            </div>
           </div>
           <%= if review.user_id == @current_user.id do %>
             <button
               phx-target={@myself}
               phx-click="delete_review"
               phx-value-id={review.id}
-              class="text-red-500 hover:text-red-700 mt-2"
+              class="text-red-500 hover:text-red-700"
               data-confirm="Are you sure?"
             >
               Delete
