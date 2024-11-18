@@ -19,7 +19,7 @@ defmodule BookifyWeb.Plugs.EnsureReviewOwner do
         else
           conn
           |> put_status(:forbidden)
-          |> json(%{errors: %{detail: "You are not authorized to access this review."}})
+          |> json(%{errors: [%{detail: "You are not authorized to access this review."}]})
           |> halt()
         end
 
