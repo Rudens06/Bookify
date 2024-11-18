@@ -106,7 +106,7 @@ defmodule Bookify.Users.User do
     )
     |> validate_format(:password, ~r/[0-9]/, message: "Must contain at least one digit")
     |> validate_format(:password, ~r/[*.!@#$%^&(){}[:;<>,.?]/,
-      message: "Must contain at least one symbol"
+      message: "Must contain at least one special symbol"
     )
   end
 
