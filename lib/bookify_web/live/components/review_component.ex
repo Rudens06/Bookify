@@ -21,7 +21,7 @@ defmodule BookifyWeb.ReviewComponent do
 
     case Reviews.create_review(book, user, review_params) do
       {:ok, _review} ->
-        {:noreply, assign(socket, reviews: Reviews.list_book_reviews(book.id, [:user]))}
+        {:noreply, assign(socket, reviews: Reviews.list_book_reviews(book.id))}
 
       {:error, changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
