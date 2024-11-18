@@ -1,0 +1,49 @@
+<div class="reviews mt-8">
+  <h2 class="text-xl font-semibold">Reviews</h2>
+  <div class="mt-4">
+    <%= if @reviews do %>
+      <%= for review <- @reviews do %>
+        <div class="p-4 mb-2 border border-gray-300 rounded-md flex justify-between items-start">
+          <div class="user-info">
+            <%= review.user.name %>
+          </div>
+          <div class="content">
+            <h4 class="text-lg font-semibold text-gray-900"><%= review.title %></h4>
+            <p class="text-gray-700"><%= review.body %></p>
+            <p class="text-sm mt-1 text-gray-500">
+              <strong>Rating:</strong> <%= review.rating %> / 5
+            </p>
+          </div>
+          <%= if review.user_id == @current_user.id do %>
+            <button
+              phx-target={@myself}
+              phx-click="delete_review"
+              phx-value-id={review.id}
+              class="text-red-500 hover:text-red-700 mt-2"
+              data-confirm="Are you sure?"
+            >
+              Delete
+            </button>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <h3 class="text-lg font-semibold mt-6">Add a Review</h3>
+  <.form for={@form} phx-submit="save_review" phx-target={@myself}>
+    <.input field={@form[:title]} type="text" label="Title" placeholder="Title" />
+    <.input field={@form[:body]} type="text" label="Body" placeholder="Content..." />
+    <.input
+      field={@form[:rating]}
+      type="number"
+      min="1"
+      max="5"
+      label="Rating"
+      placeholder="Rating"
+    />
+    <.button phx-disable-with="Saving..." class="my-4">
+      Save Review
+    </.button>
+  </.form>
+</div>
