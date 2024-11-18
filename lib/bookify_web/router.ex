@@ -59,6 +59,10 @@ defmodule BookifyWeb.Router do
     live_session :mount_current_user,
       on_mount: [{BookifyWeb.Plugs.Auth, :mount_current_user}] do
       live "/", BookLive.Index
+      live "/books/:isbn", BookLive.Show
+
+      live "/authors", AuthorLive.Index
+      live "/authors/:id", AuthorLive.Show
     end
   end
 

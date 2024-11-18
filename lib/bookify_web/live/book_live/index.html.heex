@@ -4,7 +4,7 @@
     id={dom_id}
     class="m-5 transition-transform duration-400 hover:scale-105"
   >
-    <.link navigate={~p"/accounts/register"}>
+    <.link navigate={~p"/books/#{book.isbn}"}>
       <img src={book.cover_image_url} class="h-96 drop-shadow-lg rounded-lg" />
       <div class="text-2xl font-bold font-serif mt-2"><%= book.title %></div>
       <div class="text-sm text-gray-500 font-sans mt-1"><%= book.author.name %></div>
