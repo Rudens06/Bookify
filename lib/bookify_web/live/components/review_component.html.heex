@@ -1,5 +1,21 @@
 <div class="reviews mt-8">
   <h2 class="text-xl font-semibold">Reviews</h2>
+  <h3 class="text-lg font-semibold mt-6">Add a Review</h3>
+  <.form for={@form} phx-submit="save_review" phx-target={@myself}>
+    <.input field={@form[:title]} type="text" label="Title" placeholder="Title" />
+    <.input field={@form[:body]} type="text" label="Body" placeholder="Content..." />
+    <.input
+      field={@form[:rating]}
+      type="number"
+      min="1"
+      max="5"
+      label="Rating"
+      placeholder="Rating"
+    />
+    <.button phx-disable-with="Saving..." class="my-4">
+      Save Review
+    </.button>
+  </.form>
   <div class="mt-4">
     <%= if @reviews do %>
       <%= for review <- @reviews do %>
@@ -31,21 +47,4 @@
       <% end %>
     <% end %>
   </div>
-
-  <h3 class="text-lg font-semibold mt-6">Add a Review</h3>
-  <.form for={@form} phx-submit="save_review" phx-target={@myself}>
-    <.input field={@form[:title]} type="text" label="Title" placeholder="Title" />
-    <.input field={@form[:body]} type="text" label="Body" placeholder="Content..." />
-    <.input
-      field={@form[:rating]}
-      type="number"
-      min="1"
-      max="5"
-      label="Rating"
-      placeholder="Rating"
-    />
-    <.button phx-disable-with="Saving..." class="my-4">
-      Save Review
-    </.button>
-  </.form>
 </div>
