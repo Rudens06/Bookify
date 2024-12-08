@@ -9,7 +9,7 @@ defmodule Bookify.Users.User do
 
   @register_fields [:name, :email, :password, :password_confirmation]
   @required_register_fields [:name, :email, :password, :password_confirmation]
-  @update_fields [:username, :name]
+  @update_fields [:username, :name, :public]
 
   @admin_role "admin"
 
