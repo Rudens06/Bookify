@@ -1,6 +1,7 @@
 defmodule BookifyWeb.AuthorLive.Index do
   use BookifyWeb, :live_view
   import Bookify.Utils.User
+  import Bookify.Utils.Integer
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
@@ -41,11 +42,25 @@ defmodule BookifyWeb.AuthorLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
-    author = Authors.get_author!(id)
+    case validate_integer_id(id) do
+      {:ok, id} ->
+        case Authors.get_author(id) do
+          author = %Author{} ->
+            socket
+            |> assign(:page_title, "Edit Author")
+            |> assign(:author, author)
 
-    socket
-    |> assign(:page_title, "Edit Author")
-    |> assign(:author, author)
+          {:error, {:not_found, message}} ->
+            socket
+            |> put_flash(:error, message)
+            |> push_navigate(to: ~p"/authors")
+        end
+
+      {:error, _} ->
+        socket
+        |> put_flash(:error, "Author not found")
+        |> push_navigate(to: ~p"/authors")
+    end
   end
 
   defp apply_action(socket, :new, _params) do

@@ -19,7 +19,7 @@
       <div class="flex flex-wrap gap-2 mt-4">
         <%= for genre <- @book.genres do %>
           <span class="bg-gray-800 text-gray-200 text-sm py-1 px-3 rounded-full">
-            <%= genre %>
+            <%= String.capitalize(genre) %>
           </span>
         <% end %>
       </div>
@@ -73,6 +73,17 @@
           </:not_in_list_icon>
         </.live_component>
       </div>
+      <.button :if={is_admin?(@current_user)} phx-click="edit_book" class="mt-2">
+        Edit Book
+      </.button>
+      <.button
+        :if={is_admin?(@current_user)}
+        phx-click="delete_book"
+        data-confirm="Are you sure?"
+        class="mt-2 bg-red-600"
+      >
+        Delete Book
+      </.button>
     </div>
   </div>
   <div class="mt-10">
@@ -100,3 +111,18 @@
     current_user={@current_user}
   />
 </div>
+<.modal
+  :if={@live_action in [:edit]}
+  id="book-modal"
+  show
+  on_cancel={JS.patch(~p"/books/#{@book.isbn}")}
+>
+  <.live_component
+    id="book-form-component"
+    module={BookifyWeb.BookLive.FormComponent}
+    book={@book}
+    authors={@authors}
+    action={@live_action}
+    patch={~p"/books/#{@book.isbn}"}
+  />
+</.modal>

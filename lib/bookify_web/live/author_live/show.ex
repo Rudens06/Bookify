@@ -1,6 +1,7 @@
 defmodule BookifyWeb.AuthorLive.Show do
   use BookifyWeb, :live_view
   import Bookify.Utils.User
+  import Bookify.Utils.Integer
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
@@ -11,11 +12,19 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   def handle_params(%{"id" => id}, _, socket) do
     socket =
-      case Authors.get_author(id, [:books]) do
-        author = %Author{} ->
-          socket
-          |> assign(:page_title, page_title(socket.assigns.live_action))
-          |> assign(:author, author)
+      case validate_integer_id(id) do
+        {:ok, id} ->
+          case Authors.get_author(id, [:books]) do
+            author = %Author{} ->
+              socket
+              |> assign(:page_title, page_title(socket.assigns.live_action))
+              |> assign(:author, author)
+
+            {:error, {:not_found, message}} ->
+              socket
+              |> put_flash(:error, message)
+              |> push_navigate(to: ~p"/authors")
+          end
 
         {:error, _} ->
           socket

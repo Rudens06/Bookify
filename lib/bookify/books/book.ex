@@ -19,6 +19,7 @@ defmodule Bookify.Books.Book do
   @required_fields [
     :title,
     :isbn,
+    :genres,
     :publish_year,
     :page_count,
     :anotation,
@@ -44,5 +45,16 @@ defmodule Bookify.Books.Book do
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
     |> unique_constraint([:isbn])
+    |> validate_genres()
+  end
+
+  defp validate_genres(changeset) do
+    genres = get_field(changeset, :genres)
+
+    if is_nil(genres) or genres == [] do
+      add_error(changeset, :genres, "can't be blank")
+    else
+      changeset
+    end
   end
 end

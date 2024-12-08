@@ -19,10 +19,6 @@ defmodule Bookify.Authors do
     end
   end
 
-  def get_author!(id, preloads \\ []) do
-    Repo.get!(Author, id) |> Repo.preload(preloads)
-  end
-
   def search_authors(query, preloads \\ []) do
     query = "%#{query}%"
 

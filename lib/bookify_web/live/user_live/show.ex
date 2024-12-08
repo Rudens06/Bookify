@@ -14,11 +14,11 @@ defmodule BookifyWeb.UserLive.Show do
           socket
           |> assign(:lists, lists)
           |> assign(:user, user)
-          |> assign(:page_title, "User Profile")
+          |> assign(:page_title, "#{user.name} Profile")
 
-        {:error, _} ->
+        {:error, {:not_found, message}} ->
           socket
-          |> put_flash(:error, "User not found")
+          |> put_flash(:error, message)
           |> push_navigate(to: ~p"/users")
       end
 
