@@ -10,6 +10,17 @@ defmodule Bookify.Users do
     Repo.all(User)
   end
 
+  def search_users(query, exclude_user_id, preloads \\ []) do
+    query = "%#{query}%"
+
+    Repo.all(
+      from a in User,
+        where: ilike(a.name, ^query),
+        where: a.id != ^exclude_user_id,
+        preload: ^preloads
+    )
+  end
+
   def get_user(id), do: Repo.get(User, id)
 
   def get_user_by_public_id(id) do
