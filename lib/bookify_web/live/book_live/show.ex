@@ -14,9 +14,9 @@ defmodule BookifyWeb.BookLive.Show do
         book = %Book{} ->
           assign(socket, :book, book)
 
-        {:error, _} ->
+        {:error, {:not_found, message}} ->
           socket
-          |> put_flash(:error, "Book not found")
+          |> put_flash(:error, message)
           |> push_navigate(to: ~p"/")
       end
 

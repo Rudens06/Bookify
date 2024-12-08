@@ -11,11 +11,19 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   def handle_params(%{"id" => id}, _, socket) do
     socket =
-      case Authors.get_author(id, [:books]) do
-        author = %Author{} ->
-          socket
-          |> assign(:page_title, page_title(socket.assigns.live_action))
-          |> assign(:author, author)
+      case validate_id(id) do
+        {:ok, id} ->
+          case Authors.get_author(id, [:books]) do
+            author = %Author{} ->
+              socket
+              |> assign(:page_title, page_title(socket.assigns.live_action))
+              |> assign(:author, author)
+
+            {:error, {:not_found, message}} ->
+              socket
+              |> put_flash(:error, message)
+              |> push_navigate(to: ~p"/authors")
+          end
 
         {:error, _} ->
           socket
@@ -48,4 +56,14 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   defp page_title(:show), do: "Show Author"
   defp page_title(:edit), do: "Edit Author"
+
+  defp validate_id(id) do
+    case Integer.parse(id) do
+      {id, _} ->
+        {:ok, id}
+
+      _ ->
+        {:error, "Invalid ID"}
+    end
+  end
 end
