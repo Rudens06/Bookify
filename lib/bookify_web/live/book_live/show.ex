@@ -9,12 +9,17 @@ defmodule BookifyWeb.BookLive.Show do
   end
 
   def handle_params(%{"isbn" => isbn}, _url, socket) do
-    case Books.get_book_by_isbn(isbn, [:author]) do
-      book = %Book{} ->
-        {:noreply, assign(socket, :book, book)}
+    socket =
+      case Books.get_book_by_isbn(isbn, [:author]) do
+        book = %Book{} ->
+          assign(socket, :book, book)
 
-      {:error, {:not_found, message}} ->
-        {:noreply, assign(socket, book: nil, error: message)}
-    end
+        {:error, _} ->
+          socket
+          |> put_flash(:error, "Book not found")
+          |> push_navigate(to: ~p"/")
+      end
+
+    {:noreply, socket}
   end
 end

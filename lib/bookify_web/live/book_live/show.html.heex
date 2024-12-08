@@ -1,108 +1,102 @@
-<%= if @book do %>
-  <div class="max-w-4xl mx-auto p-6 bg-gray-200 text-gray-900 rounded-lg">
-    <div class="flex flex-col lg:flex-row gap-6">
-      <div class="flex-shrink-0">
-        <img
-          src={@book.cover_image_url}
-          alt={"book" <> @book.title <> "cover picture"}
-          class="w-48 lg:w-60 h-auto rounded shadow-lg"
-        />
+<div class="max-w-4xl mx-auto p-6 bg-gray-200 text-gray-900 rounded-lg">
+  <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex-shrink-0">
+      <img
+        src={@book.cover_image_url}
+        alt={"book" <> @book.title <> "cover picture"}
+        class="w-48 lg:w-60 h-auto rounded shadow-lg"
+      />
+    </div>
+    <div class="flex-1">
+      <h1 class="text-3xl font-bold mb-2"><%= @book.title %></h1>
+      <h2 class="text-lg">
+        by
+        <.link navigate={~p"/authors/#{@book.author.id}"} class="hover:text-blue-700">
+          <%= @book.author.name %>
+        </.link>
+      </h2>
+      <span class="mt-4"><%= @book.page_count %> pages</span>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <%= for genre <- @book.genres do %>
+          <span class="bg-gray-800 text-gray-200 text-sm py-1 px-3 rounded-full">
+            <%= genre %>
+          </span>
+        <% end %>
       </div>
-      <div class="flex-1">
-        <h1 class="text-3xl font-bold mb-2"><%= @book.title %></h1>
-        <h2 class="text-lg">
-          by
-          <.link navigate={~p"/authors/#{@book.author.id}"} class="hover:text-blue-700">
-            <%= @book.author.name %>
-          </.link>
-        </h2>
-        <span class="mt-4"><%= @book.page_count %> pages</span>
-        <div class="flex flex-wrap gap-2 mt-4">
-          <%= for genre <- @book.genres do %>
-            <span class="bg-gray-800 text-gray-200 text-sm py-1 px-3 rounded-full">
-              <%= genre %>
-            </span>
-          <% end %>
-        </div>
-        <p class="mt-4">
-          <%= @book.anotation %>
+      <p class="mt-4">
+        <%= @book.anotation %>
+      </p>
+      <div class="mt-4">
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.favorite_list_name()}
+          id={"favorites-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-star text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="far fa-star text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.reading_list_name()}
+          id={"reading-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-book text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="fas fa-book text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.wishlist_list_name()}
+          id={"wishlist-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-bookmark text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="fas fa-bookmark text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+      </div>
+    </div>
+  </div>
+  <div class="mt-10">
+    <h3 class="text-xl font-semibold mb-4">About the Author</h3>
+    <div class="flex items-start gap-4">
+      <img
+        src={@book.author.image_url}
+        alt={@book.author.name <> "picture"}
+        class="w-24 rounded-lg"
+      />
+      <div>
+        <.link navigate={~p"/authors/#{@book.author.id}"}>
+          <h4 class="text-lg font-semibold"><%= @book.author.name %></h4>
+        </.link>
+        <p class="mt-2 max-h-32 text-elipsis overflow-hidden">
+          <%= @book.author.biography %>
         </p>
-        <div class="mt-4">
-          <.live_component
-            module={BookifyWeb.ListActionButtonComponent}
-            current_user={@current_user}
-            book={@book}
-            list_name={Bookify.Lists.List.favorite_list_name()}
-            id={"favorites-list-toggle-button-" <> Integer.to_string(@book.id)}
-          >
-            <:in_list_icon>
-              <i class="fas fa-star text-yellow-400 hover:scale-110 transition-all"></i>
-            </:in_list_icon>
-
-            <:not_in_list_icon>
-              <i class="far fa-star text-gray-400 hover:scale-110 transition-all"></i>
-            </:not_in_list_icon>
-          </.live_component>
-          <.live_component
-            module={BookifyWeb.ListActionButtonComponent}
-            current_user={@current_user}
-            book={@book}
-            list_name={Bookify.Lists.List.reading_list_name()}
-            id={"reading-list-toggle-button-" <> Integer.to_string(@book.id)}
-          >
-            <:in_list_icon>
-              <i class="fas fa-book text-yellow-400 hover:scale-110 transition-all"></i>
-            </:in_list_icon>
-
-            <:not_in_list_icon>
-              <i class="fas fa-book text-gray-400 hover:scale-110 transition-all"></i>
-            </:not_in_list_icon>
-          </.live_component>
-          <.live_component
-            module={BookifyWeb.ListActionButtonComponent}
-            current_user={@current_user}
-            book={@book}
-            list_name={Bookify.Lists.List.wishlist_list_name()}
-            id={"wishlist-list-toggle-button-" <> Integer.to_string(@book.id)}
-          >
-            <:in_list_icon>
-              <i class="fas fa-bookmark text-yellow-400 hover:scale-110 transition-all"></i>
-            </:in_list_icon>
-
-            <:not_in_list_icon>
-              <i class="fas fa-bookmark text-gray-400 hover:scale-110 transition-all"></i>
-            </:not_in_list_icon>
-          </.live_component>
-        </div>
       </div>
     </div>
-    <div class="mt-10">
-      <h3 class="text-xl font-semibold mb-4">About the Author</h3>
-      <div class="flex items-start gap-4">
-        <img
-          src={@book.author.image_url}
-          alt={@book.author.name <> "picture"}
-          class="w-24 rounded-lg"
-        />
-        <div>
-          <.link navigate={~p"/authors/#{@book.author.id}"}>
-            <h4 class="text-lg font-semibold"><%= @book.author.name %></h4>
-          </.link>
-          <p class="mt-2 max-h-32 text-elipsis overflow-hidden">
-            <%= @book.author.biography %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <.live_component
-      module={BookifyWeb.ReviewComponent}
-      id={:review_component}
-      book={@book}
-      current_user={@current_user}
-    />
   </div>
-<% else %>
-  <div>
-    <p class="text-center text-2xl mt-8">Book not found</p>
-  </div>
-<% end %>
+  <.live_component
+    module={BookifyWeb.ReviewComponent}
+    id={:review_component}
+    book={@book}
+    current_user={@current_user}
+  />
+</div>
