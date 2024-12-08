@@ -83,8 +83,8 @@ defmodule BookifyWeb.Router do
       live "/authors/:id/show/edit", AuthorLive.Show, :edit
 
       live "/books/new", BookLive.Index, :new
-      live "/books/:id/edit", BookLive.Index, :edit
-      live "/books/:id/show/edit", BookLive.Show, :edit
+      live "/books/:isbn/edit", BookLive.Index, :edit
+      live "/books/:isbn/show/edit", BookLive.Show, :edit
     end
   end
 

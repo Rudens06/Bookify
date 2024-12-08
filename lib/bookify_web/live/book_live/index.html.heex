@@ -2,6 +2,7 @@
   <div class="search max-w-md mx-auto">
     <.input name="query" value={@query} type="text" placeholder="Search..." phx-keyup="search">
     </.input>
+    <.button :if={is_admin?(@current_user)} phx-click="add_book">Add Book</.button>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     <div :for={book <- @books}>
@@ -11,6 +12,19 @@
         book={book}
         current_user={@current_user}
       />
+      <.button :if={is_admin?(@current_user)} phx-click="edit_book" phx-value-isbn={book.isbn}>
+        Edit
+      </.button>
     </div>
   </div>
 </div>
+<.modal :if={@live_action in [:new, :edit]} id="book-modal" show on_cancel={JS.patch(~p"/")}>
+  <.live_component
+    id="book-form-component"
+    module={BookifyWeb.BookLive.FormComponent}
+    authors={@authors}
+    book={@book}
+    action={@live_action}
+    patch={~p"/"}
+  />
+</.modal>
