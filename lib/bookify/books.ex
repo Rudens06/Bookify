@@ -11,7 +11,28 @@ defmodule Bookify.Books do
     |> Repo.preload(preloads)
   end
 
-  def get_book(id), do: Repo.get(Book, id)
+  def search_books(query, preloads \\ []) do
+    query = "%#{query}%"
+
+    Repo.all(
+      from b in Book,
+        join: a in assoc(b, :author),
+        where: ilike(b.title, ^query) or ilike(a.name, ^query),
+        preload: ^preloads
+    )
+  end
+
+  def get_book!(id), do: Repo.get!(Book, id)
+
+  def get_book(id) do
+    case Repo.get(Book, id) do
+      nil ->
+        not_found()
+
+      book ->
+        book
+    end
+  end
 
   def get_book_by_isbn(isbn, preloads \\ []) do
     case Repo.get_by(Book, isbn: isbn)

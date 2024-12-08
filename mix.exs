@@ -40,7 +40,6 @@ defmodule Bookify.MixProject do
       {:phoenix_live_reload, "~> 1.5.3", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.0"},
       {:heroicons, "~> 0.5"},
-      {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -51,7 +50,9 @@ defmodule Bookify.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:puid, "~> 2.0"},
-      {:bcrypt_elixir, "~> 3.0"}
+      {:bcrypt_elixir, "~> 3.0"},
+      {:httpoison, "~> 2.0"},
+      {:floki, "~> 0.36.0"}
     ]
   end
 

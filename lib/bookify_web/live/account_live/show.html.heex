@@ -2,70 +2,96 @@
 <div class="min-w-max mt-2 border rounded-md">
   <div class="m-3">
     <div class="text-3xl mt-2">
-      <%= @user.name %>
+      <%= @current_user.name %>
     </div>
 
-    <%= if @user.public || @user.id == @current_user.id do %>
-      <div class="text-2xl mt-2">
-        <%= @user.email %>
+    <div class="text-2xl mt-2">
+      <%= @current_user.email %>
+    </div>
+    <div class="text-xl mt-2">
+      Joined: <%= @current_user.inserted_at %>
+    </div>
+
+    <div class="account-controls">
+      <div class="state-toggle mt-4">
+        <label class="inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            class="sr-only peer"
+            phx-click="toggle_public"
+            checked={@current_user.public}
+          />
+
+          <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-yellow-400">
+          </div>
+          <span class="ms-3 ml-1 text-sm font-medium text-gray-900">
+            <%= if @current_user.public, do: "Public Profile", else: "Private Profile" %>
+          </span>
+        </label>
       </div>
-      <div class="text-xl mt-2">
-        Joined: <%= @user.inserted_at %>
+      <div class="api-token-controls mt-4">
+        <.button
+          class="mt-2"
+          data-confirm="Are you sure?"
+          phx-click={JS.show(to: "#api-keys-container")}
+        >
+          Show Tokens
+        </.button>
+
+        <.button class="mt-2" phx-click={JS.hide(to: "#api-keys-container")}>
+          Hide Tokens
+        </.button>
+
+        <.button class="mt-2" phx-click="gen_token">
+          Generate New Token
+        </.button>
+
+        <.button
+          class="mt-2"
+          phx-click="delete_all_tokens"
+          data-confirm="Are you sure?"
+          class="bg-red-500"
+        >
+          Delete All Tokens
+        </.button>
       </div>
-    <% end %>
+    </div>
 
-    <%= if @user.id == @current_user.id do %>
-      <.button
-        class="mt-2"
-        data-confirm="Are you sure?"
-        phx-click={JS.show(to: "#api-keys-container")}
-      >
-        Show Tokens
-      </.button>
-
-      <.button class="mt-2" phx-click={JS.hide(to: "#api-keys-container")}>
-        Hide Tokens
-      </.button>
-
-      <.button class="mt-2" phx-click="gen_token">
-        Generate New Token
-      </.button>
-
-      <.button
-        class="mt-2"
-        phx-click="delete_all_tokens"
-        data-confirm="Are you sure?"
-        class="bg-red-500"
-      >
-        Delete All Tokens
-      </.button>
-
-      <div id="api-keys-container">
-        <.table id="api-keys-table" rows={@streams.api_tokens}>
-          <:col :let={{_id, token}} label="Key"><%= token.token %></:col>
-          <:col :let={{_id, token}} label="Name"><%= token.title %></:col>
-          <:col :let={{_id, token}} label="Context"><%= token.context %></:col>
-          <:col :let={{_id, token}} label="Expires At"><%= token.expires_at %></:col>
-          <:col :let={{_id, token}} label="Expires in">
-            <%= if !is_nil(token.expires_at) do %>
-              <%= from_today(token.expires_at, :day) %> days
-            <% else %>
-              N/A
-            <% end %>
-          </:col>
-          <:action :let={{_id, token}}>
-            <.button
-              class="mt-2"
-              phx-click="delete_token"
-              data-confirm="Are you sure?"
-              phx-value-id={token.id}
-              class="bg-red-500"
-            >
-              Delete
-            </.button>
-          </:action>
-        </.table>
-      </div>
-    <% end %>
+    <div id="api-keys-container">
+      <.table id="api-keys-table" rows={@streams.api_tokens}>
+        <:col :let={{_id, token}} label="Key"><%= token.token %></:col>
+        <:col :let={{_id, token}} label="Name"><%= token.title %></:col>
+        <:col :let={{_id, token}} label="Context"><%= token.context %></:col>
+        <:col :let={{_id, token}} label="Expires At"><%= token.expires_at %></:col>
+        <:col :let={{_id, token}} label="Expires in">
+          <%= if !is_nil(token.expires_at) do %>
+            <%= from_today(token.expires_at, :day) %> days
+          <% else %>
+            N/A
+          <% end %>
+        </:col>
+        <:action :let={{_id, token}}>
+          <.button
+            class="mt-2"
+            phx-click="delete_token"
+            data-confirm="Are you sure?"
+            phx-value-id={token.id}
+            class="bg-red-500"
+          >
+            Delete
+          </.button>
+        </:action>
+      </.table>
+    </div>
   </div>
+</div>
+<div class="list-container mt-2">
+  <%= for list <- @lists do %>
+    <.live_component
+      module={BookifyWeb.BookListComponent}
+      list_name={list.name}
+      id={list.id}
+      user={@current_user}
+    />
+  <% end %>
 </div>

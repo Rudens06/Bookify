@@ -14,13 +14,24 @@ defmodule Bookify.Lists do
     |> Repo.all()
   end
 
-  def get_list(id) do
-    case Repo.get(List, id) do
+  def get_list(id, user_id) do
+    case Repo.get_by(List, id: id, user_id: user_id) do
       nil ->
         list_not_found()
 
       list ->
         list
+    end
+  end
+
+  def get_list_by_name(name, user_id, preloads \\ []) do
+    case Repo.get_by(List, name: name, user_id: user_id) do
+      nil ->
+        list_not_found()
+
+      list ->
+        list
+        |> Repo.preload(preloads)
     end
   end
 
@@ -69,6 +80,14 @@ defmodule Bookify.Lists do
   def update_book_list(%ListBook{} = list_book, attrs \\ %{}) do
     ListBook.update_changeset(list_book, attrs)
     |> Repo.update()
+  end
+
+  def has_book?(list, book_id) do
+    Repo.exists?(book_in_list_query(list, book_id))
+  end
+
+  defp book_in_list_query(list, book_id) do
+    from(lb in ListBook, where: lb.list_id == ^list.id and lb.book_id == ^book_id)
   end
 
   defp list_not_found() do

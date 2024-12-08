@@ -91,17 +91,23 @@
         </.link>
         <%= if @current_user do %>
           <.link
-            href={~p"/accounts/logout"}
+            href={~p"/users"}
             class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-            method="delete"
           >
-            Log out
+            Users
           </.link>
           <.link
             href={~p"/accounts/show"}
             class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
           >
             Profile
+          </.link>
+          <.link
+            href={~p"/accounts/logout"}
+            class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+            method="delete"
+          >
+            Log out
           </.link>
         <% else %>
           <.link

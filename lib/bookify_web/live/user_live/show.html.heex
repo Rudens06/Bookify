@@ -1,0 +1,20 @@
+<div class="max-w-4xl mx-auto p-6 bg-gray-200 text-gray-900 rounded-lg">
+  <div class="text-lg"><%= @user.name %></div>
+  <div class="text-lg mt-2">
+    Joined: <%= to_human_readable_date(@current_user.inserted_at) %>
+  </div>
+</div>
+<%= if @user.public do %>
+  <div class="list-container mt-2">
+    <%= for list <- @lists do %>
+      <.live_component
+        module={BookifyWeb.BookListComponent}
+        list_name={list.name}
+        id={list.id}
+        user={@user}
+      />
+    <% end %>
+  </div>
+<% else %>
+  <div class="mt-4 text-3xl text-center"><%= @user.name %> profile is private!</div>
+<% end %>

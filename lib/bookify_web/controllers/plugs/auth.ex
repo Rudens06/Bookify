@@ -58,6 +58,17 @@ defmodule BookifyWeb.Plugs.Auth do
     end
   end
 
+  def require_admin_user(conn, _opts) do
+    if user_is_admin?(conn.assigns.current_user) do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Not allowed!")
+      |> redirect(to: authenticated_path())
+      |> halt()
+    end
+  end
+
   def on_mount(:redirect_if_authenticated, _params, session, socket) do
     socket = mount_current_user(socket, session)
 
@@ -82,13 +93,23 @@ defmodule BookifyWeb.Plugs.Auth do
     end
   end
 
+  def on_mount(:require_admin_user, _params, session, socket) do
+    socket = mount_current_user(socket, session)
+
+    if user_is_admin?(socket.assigns.current_user) do
+      {:cont, socket}
+    else
+      {:halt, LiveView.redirect(socket, to: login_path())}
+    end
+  end
+
   def user_is_admin?(nil), do: false
 
   def user_is_admin?(user) do
     User.admin_role() in user.roles
   end
 
-  defp mount_current_user(socket, session) do
+  def mount_current_user(socket, session) do
     if token = session["user_token"] do
       user = Users.get_user_by_token(token, :session)
       Phoenix.Component.assign(socket, :current_user, user)

@@ -1,4 +1,5 @@
 defmodule Bookify.Authors do
+  import Ecto.Query
   alias Bookify.Repo
   alias Bookify.Authors.Author
 
@@ -16,6 +17,20 @@ defmodule Bookify.Authors do
       author ->
         author
     end
+  end
+
+  def get_author!(id, preloads \\ []) do
+    Repo.get!(Author, id) |> Repo.preload(preloads)
+  end
+
+  def search_authors(query, preloads \\ []) do
+    query = "%#{query}%"
+
+    Repo.all(
+      from a in Author,
+        where: ilike(a.name, ^query),
+        preload: ^preloads
+    )
   end
 
   def create_author(attrs \\ %{}) do

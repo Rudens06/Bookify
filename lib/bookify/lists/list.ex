@@ -8,6 +8,9 @@ defmodule Bookify.Lists.List do
 
   @cast_fields [:name, :description]
   @required_fields [:name]
+  @favorite_list_name "favorites"
+  @wishlist_list_name "wishlist"
+  @reading_list_name "reading list"
 
   schema "lists" do
     field :name, :string
@@ -30,4 +33,8 @@ defmodule Bookify.Lists.List do
     |> put_assoc(:user, user)
     |> validate_required(@required_fields)
   end
+
+  def favorite_list_name(), do: @favorite_list_name
+  def wishlist_list_name(), do: @wishlist_list_name
+  def reading_list_name(), do: @reading_list_name
 end

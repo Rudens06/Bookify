@@ -26,6 +26,53 @@
       <p class="mt-4">
         <%= @book.anotation %>
       </p>
+      <div class="mt-4">
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.favorite_list_name()}
+          id={"favorites-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-star text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="far fa-star text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.reading_list_name()}
+          id={"reading-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-book text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="fas fa-book text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+        <.live_component
+          module={BookifyWeb.ListActionButtonComponent}
+          current_user={@current_user}
+          book={@book}
+          list_name={Bookify.Lists.List.wishlist_list_name()}
+          id={"wishlist-list-toggle-button-" <> Integer.to_string(@book.id)}
+        >
+          <:in_list_icon>
+            <i class="fas fa-bookmark text-yellow-400 hover:scale-110 transition-all"></i>
+          </:in_list_icon>
+
+          <:not_in_list_icon>
+            <i class="fas fa-bookmark text-gray-400 hover:scale-110 transition-all"></i>
+          </:not_in_list_icon>
+        </.live_component>
+      </div>
     </div>
   </div>
   <div class="mt-10">

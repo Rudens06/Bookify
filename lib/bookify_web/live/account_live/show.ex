@@ -2,19 +2,36 @@ defmodule BookifyWeb.AccountLive.Show do
   use BookifyWeb, :live_view
 
   import Bookify.Utils.User
-  import BookifyWeb.Utils.DateTime
+  import Bookify.Utils.DateTime
   alias Bookify.Users
+  alias Bookify.Lists
 
   def mount(_params, _session, socket) do
     user = current_user(socket)
     api_tokens = Users.get_users_tokens(user, :api)
+    lists = Lists.lists_by_user_id(user.id)
 
     socket =
       socket
-      |> assign(user: user, page_title: "Profile")
+      |> assign(page_title: "Profile")
+      |> assign(lists: lists)
       |> stream(:api_tokens, api_tokens)
 
     {:ok, socket}
+  end
+
+  def handle_event("toggle_public", _params, socket) do
+    user = current_user(socket)
+    new_public_state = !user.public
+    dbg(new_public_state)
+
+    case Users.update_user(user, %{public: new_public_state}) do
+      {:ok, updated_user} ->
+        {:noreply, assign(socket, :current_user, updated_user)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update profile visibility.")}
+    end
   end
 
   def handle_event("gen_token", _params, socket) do

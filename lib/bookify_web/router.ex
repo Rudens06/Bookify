@@ -18,7 +18,7 @@ defmodule BookifyWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :authenticated_api do
+  pipeline :authenticate_api do
     plug AuthenticateApi
   end
 
@@ -27,7 +27,7 @@ defmodule BookifyWeb.Router do
   end
 
   scope "/api/v1", BookifyWeb.Api.V1 do
-    pipe_through [:api, :authenticated_api]
+    pipe_through [:api, :authenticate_api]
 
     get "/authors", AuthorController, :index
     get "/authors/:id", AuthorController, :show
@@ -71,6 +71,17 @@ defmodule BookifyWeb.Router do
   end
 
   scope "/", BookifyWeb do
+    pipe_through [:browser, :require_admin_user]
+
+    live_session :require_admin_user,
+      on_mount: [{BookifyWeb.Plugs.Auth, :require_admin_user}] do
+      live "/authors/new", AuthorLive.Index, :new
+      live "/authors/:id/edit", AuthorLive.Index, :edit
+      live "/authors/:id/show/edit", AuthorLive.Show, :edit
+    end
+  end
+
+  scope "/", BookifyWeb do
     pipe_through :browser
 
     live_session :mount_current_user,
@@ -78,8 +89,11 @@ defmodule BookifyWeb.Router do
       live "/", BookLive.Index
       live "/books/:isbn", BookLive.Show
 
-      live "/authors", AuthorLive.Index
-      live "/authors/:id", AuthorLive.Show
+      live "/authors", AuthorLive.Index, :index
+      live "/authors/:id", AuthorLive.Show, :show
+
+      live "/book_import", BookImportLive.Index
+      live "/book_import/show", BookImportLive.Show
     end
   end
 
@@ -89,6 +103,9 @@ defmodule BookifyWeb.Router do
     live_session :require_authenticated_user,
       on_mount: [{BookifyWeb.Plugs.Auth, :require_authenticated_user}] do
       live "/accounts/show", AccountLive.Show
+
+      live "/users", UserLive.Index
+      live "/users/:public_id", UserLive.Show
     end
 
     delete "/accounts/logout", UserSessionController, :delete
