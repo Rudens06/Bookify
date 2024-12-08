@@ -1,0 +1,52 @@
+<div class="m-5">
+  <.link navigate={~p"/books/#{@book.isbn}"}>
+    <img src={@book.cover_image_url} class="h-96 drop-shadow-lg rounded-lg" />
+    <div class="text-2xl font-bold font-serif mt-2 hover:text-gray-600"><%= @book.title %></div>
+    <div class="text-sm text-gray-500 font-sans mt-1"><%= @book.author.name %></div>
+  </.link>
+  <.live_component
+    module={BookifyWeb.ListActionButtonComponent}
+    current_user={@current_user}
+    book={@book}
+    list_name={Bookify.Lists.List.favorite_list_name()}
+    id={"favorites-list-toggle-button-" <> Integer.to_string(@book.id)}
+  >
+    <:in_list_icon>
+      <i class="fas fa-star text-yellow-400 hover:scale-110 transition-all"></i>
+    </:in_list_icon>
+
+    <:not_in_list_icon>
+      <i class="far fa-star text-gray-400 hover:scale-110 transition-all"></i>
+    </:not_in_list_icon>
+  </.live_component>
+  <.live_component
+    module={BookifyWeb.ListActionButtonComponent}
+    current_user={@current_user}
+    book={@book}
+    list_name={Bookify.Lists.List.reading_list_name()}
+    id={"reading-list-toggle-button-" <> Integer.to_string(@book.id)}
+  >
+    <:in_list_icon>
+      <i class="fas fa-book text-yellow-400 hover:scale-110 transition-all"></i>
+    </:in_list_icon>
+
+    <:not_in_list_icon>
+      <i class="fas fa-book text-gray-400 hover:scale-110 transition-all"></i>
+    </:not_in_list_icon>
+  </.live_component>
+  <.live_component
+    module={BookifyWeb.ListActionButtonComponent}
+    current_user={@current_user}
+    book={@book}
+    list_name={Bookify.Lists.List.wishlist_list_name()}
+    id={"wishlist-list-toggle-button-" <> Integer.to_string(@book.id)}
+  >
+    <:in_list_icon>
+      <i class="fas fa-bookmark text-yellow-400 hover:scale-110 transition-all"></i>
+    </:in_list_icon>
+
+    <:not_in_list_icon>
+      <i class="fas fa-bookmark text-gray-400 hover:scale-110 transition-all"></i>
+    </:not_in_list_icon>
+  </.live_component>
+</div>
