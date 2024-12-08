@@ -3,18 +3,27 @@ defmodule BookifyWeb.AuthorLive.Show do
   import Bookify.Utils.User
 
   alias Bookify.Authors
+  alias Bookify.Authors.Author
 
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
   def handle_params(%{"id" => id}, _, socket) do
-    author = Authors.get_author(id, [:books])
+    socket =
+      case Authors.get_author(id, [:books]) do
+        author = %Author{} ->
+          socket
+          |> assign(:page_title, page_title(socket.assigns.live_action))
+          |> assign(:author, author)
 
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:author, author)}
+        {:error, _} ->
+          socket
+          |> put_flash(:error, "Author not found")
+          |> push_navigate(to: ~p"/authors")
+      end
+
+    {:noreply, socket}
   end
 
   def handle_event("edit_author", _params, socket) do
