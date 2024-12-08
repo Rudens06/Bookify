@@ -1,6 +1,7 @@
 defmodule BookifyWeb.BookLive.Index do
   use BookifyWeb, :live_view
   import Bookify.Utils.User
+  import Bookify.Utils.Book
 
   alias Bookify.Books
   alias Bookify.Authors
@@ -46,7 +47,9 @@ defmodule BookifyWeb.BookLive.Index do
   defp apply_action(socket, :edit, %{"isbn" => isbn}) do
     case Books.get_book_by_isbn(isbn) do
       book = %Book{} ->
-        authors = author_options()
+        authors =
+          Authors.list_authors()
+          |> select_options()
 
         socket
         |> assign(:page_title, "Edit Book")
@@ -61,7 +64,9 @@ defmodule BookifyWeb.BookLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    authors = author_options()
+    authors =
+      Authors.list_authors()
+      |> select_options()
 
     socket
     |> assign(:page_title, "New Book")
@@ -73,10 +78,5 @@ defmodule BookifyWeb.BookLive.Index do
     socket
     |> assign(:page_title, "Books")
     |> assign(:book, nil)
-  end
-
-  defp author_options() do
-    Authors.list_authors()
-    |> Enum.map(&{&1.name, &1.id})
   end
 end
