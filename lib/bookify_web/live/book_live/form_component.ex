@@ -36,6 +36,8 @@ defmodule BookifyWeb.BookLive.FormComponent do
           placeholder="Example: Fiction, Fantasy, Adventure"
         />
         <.input field={@form[:anotation]} type="textarea" label="Anotation" />
+        <.input field={@form[:page_count]} type="number" min="1" label="Page count" />
+        <.input field={@form[:publish_year]} type="number" min="1" label="Publish year" />
         <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Book</.button>
@@ -57,13 +59,17 @@ defmodule BookifyWeb.BookLive.FormComponent do
   end
 
   def handle_event("validate", %{"book" => book_params}, socket) do
-    book_params = Map.put(book_params, "genres", genres_to_list(book_params["genres"]))
-    changeset = Books.change_book(socket.assigns.book, book_params)
+    book_params = transform_genres(book_params)
+
+    changeset =
+      Books.change_book(socket.assigns.book, book_params)
+      |> transform_genres(book_params["genres"])
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
   def handle_event("save", %{"book" => book_params}, socket) do
-    book_params = Map.put(book_params, "genres", genres_to_list(book_params["genres"]))
+    book_params = transform_genres(book_params)
     save_book(socket, socket.assigns.action, book_params)
   end
 
@@ -91,6 +97,14 @@ defmodule BookifyWeb.BookLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
+  end
+
+  defp transform_genres(changeset, genres) do
+    Ecto.Changeset.put_change(changeset, :genres, genres_to_string(genres))
+  end
+
+  defp transform_genres(book_params) do
+    Map.put(book_params, "genres", genres_to_list(book_params["genres"]))
   end
 
   defp genres_to_list(""), do: []
