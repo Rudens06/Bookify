@@ -54,7 +54,8 @@ defmodule Bookify.MixProject do
       {:floki, "~> 0.36.0"},
       {:tesla, "~> 1.11"},
       {:jason, "~> 1.4"},
-      {:mint, "~> 1.0"}
+      {:mint, "~> 1.0"},
+      {:meeseeks, "~> 0.17.0"}
     ]
   end
 
