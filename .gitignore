@@ -37,3 +37,6 @@ npm-debug.log
 
 # Ignore env
 .env
+
+# Ignore cover images
+/priv/static/images/covers/
