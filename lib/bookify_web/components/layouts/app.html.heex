@@ -90,6 +90,14 @@
           Authors
         </.link>
         <%= if @current_user do %>
+          <%= if Bookify.Utils.User.is_admin?(@current_user) do %>
+            <.link
+              href={~p"/book_import"}
+              class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+            >
+              Import Books
+            </.link>
+          <% end %>
           <.link
             href={~p"/users"}
             class="font-medium text-gray-600 hover:text-gray-400 focus:outline-none focus:text-gray-400"

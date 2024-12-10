@@ -17,9 +17,10 @@ defmodule Bookify.Application do
       # Start Finch
       {Finch, name: Bookify.Finch},
       # Start the Endpoint (http/https)
-      BookifyWeb.Endpoint
+      BookifyWeb.Endpoint,
       # Start a worker by calling: Bookify.Worker.start_link(arg)
       # {Bookify.Worker, arg}
+      {Task.Supervisor, name: Bookify.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

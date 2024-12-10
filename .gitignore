@@ -35,3 +35,8 @@ bookify-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore env
+.env
+
+# Ignore cover images
+/priv/static/images/covers/

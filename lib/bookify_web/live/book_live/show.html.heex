@@ -73,19 +73,19 @@
           </:not_in_list_icon>
         </.live_component>
       </div>
-      <.button :if={is_admin?(@current_user)} phx-click="edit_book" class="mt-2">
-        Edit Book
-      </.button>
-      <.button
-        :if={is_admin?(@current_user)}
-        phx-click="delete_book"
-        data-confirm="Are you sure?"
-        class="mt-2 bg-red-600"
-      >
-        Delete Book
-      </.button>
     </div>
   </div>
+  <.button :if={is_admin?(@current_user)} phx-click="edit_book" class="mt-2">
+    Edit Book
+  </.button>
+  <.button
+    :if={is_admin?(@current_user)}
+    phx-click="delete_book"
+    data-confirm="Are you sure?"
+    class="mt-2 bg-red-600"
+  >
+    Delete Book
+  </.button>
   <div class="mt-10">
     <h3 class="text-xl font-semibold mb-4">About the Author</h3>
     <div class="flex items-start gap-4">
@@ -123,6 +123,7 @@
     book={@book}
     authors={@authors}
     action={@live_action}
+    loading={false}
     patch={~p"/books/#{@book.isbn}"}
   />
 </.modal>

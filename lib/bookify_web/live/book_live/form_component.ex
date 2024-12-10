@@ -5,44 +5,52 @@ defmodule BookifyWeb.BookLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= if @action == :edit do %>
-          Editing: <%= @book.title %>
-        <% else %>
-          New Book
-        <% end %>
-      </.header>
+      <%= if @loading do %>
+        <.loader>
+          <:loading_text>
+            Loading...
+          </:loading_text>
+        </.loader>
+      <% else %>
+        <.header>
+          <%= if @action == :edit do %>
+            Editing: <%= @book.title %>
+          <% else %>
+            New Book
+          <% end %>
+        </.header>
 
-      <.simple_form
-        for={@form}
-        id="book-form"
-        phx-change="validate"
-        phx-submit="save"
-        phx-target={@myself}
-      >
-        <.input field={@form[:title]} type="text" label="Title" />
-        <.input field={@form[:isbn]} type="text" label="ISBN" />
-        <.input
-          type="select"
-          field={@form[:author_id]}
-          label="Author"
-          prompt="Select an author"
-          options={@authors}
-        />
-        <.input
-          field={@form[:genres]}
-          type="text"
-          label="Genres"
-          placeholder="Example: Fiction, Fantasy, Adventure"
-        />
-        <.input field={@form[:anotation]} type="textarea" label="Anotation" />
-        <.input field={@form[:page_count]} type="number" min="1" label="Page count" />
-        <.input field={@form[:publish_year]} type="number" min="1" label="Publish year" />
-        <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
-        <:actions>
-          <.button phx-disable-with="Saving...">Save Book</.button>
-        </:actions>
-      </.simple_form>
+        <.simple_form
+          for={@form}
+          id="book-form"
+          phx-change="validate"
+          phx-submit="save"
+          phx-target={@myself}
+        >
+          <.input field={@form[:title]} type="text" label="Title" />
+          <.input field={@form[:isbn]} type="text" label="ISBN" />
+          <.input
+            type="select"
+            field={@form[:author_id]}
+            label="Author"
+            prompt="Select an author"
+            options={@authors}
+          />
+          <.input
+            field={@form[:genres]}
+            type="text"
+            label="Genres"
+            placeholder="Example: Fiction, Fantasy, Adventure"
+          />
+          <.input field={@form[:anotation]} type="textarea" label="Anotation" />
+          <.input field={@form[:page_count]} type="number" min="1" label="Page count" />
+          <.input field={@form[:publish_year]} type="number" min="1" label="Publish year" />
+          <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
+          <:actions>
+            <.button phx-disable-with="Saving...">Save Book</.button>
+          </:actions>
+        </.simple_form>
+      <% end %>
     </div>
     """
   end
