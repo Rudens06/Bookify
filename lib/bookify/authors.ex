@@ -35,6 +35,24 @@ defmodule Bookify.Authors do
     |> Repo.insert()
   end
 
+  def create_if_not_exists(name) do
+    case Repo.get_by(Author, name: name) do
+      nil ->
+        changeset = Author.minimal_changeset(%Author{}, %{"name" => name})
+
+        case Repo.insert(changeset) do
+          {:ok, author} ->
+            {:ok, author}
+
+          {:error, changeset} ->
+            {:error, changeset}
+        end
+
+      author ->
+        {:ok, author}
+    end
+  end
+
   def update_author(%Author{} = author, attrs) do
     author
     |> Author.changeset(attrs)

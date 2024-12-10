@@ -23,4 +23,10 @@ defmodule Bookify.Authors.Author do
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
   end
+
+  def minimal_changeset(author, attrs) do
+    author
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
+  end
 end
