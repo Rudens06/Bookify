@@ -101,7 +101,6 @@ defmodule BookifyWeb.Router do
       live "/authors/:id", AuthorLive.Show, :show
 
       live "/book_import", BookImportLive.Index
-      live "/book_import/show", BookImportLive.Show
     end
   end
 

@@ -23,7 +23,6 @@ defmodule BookifyWeb.AccountLive.Show do
   def handle_event("toggle_public", _params, socket) do
     user = current_user(socket)
     new_public_state = !user.public
-    dbg(new_public_state)
 
     case Users.update_user(user, %{public: new_public_state}) do
       {:ok, updated_user} ->
