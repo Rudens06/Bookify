@@ -39,10 +39,10 @@ defmodule BookifyWeb.BookLive.Show do
   end
 
   def handle_event("delete_book", _params, socket) do
-    author = socket.assigns.author
+    book = socket.assigns.book
 
     socket =
-      case Books.delete_book(author) do
+      case Books.delete_book(book) do
         {:ok, _} ->
           put_flash(socket, :info, "Book deleted successfully")
 
