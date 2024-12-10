@@ -8,13 +8,9 @@ defmodule BookifyWeb.BookImportLive.Index do
   alias BookifyWeb.Modules.JanisRoze
 
   def mount(_params, _session, socket) do
-    authors =
-      Authors.list_authors()
-      |> select_options()
-
     {:ok,
      socket
-     |> assign(authors: authors)
+     |> assign(authors: [])
      |> assign(show_modal: false)
      |> assign(books: [])
      |> assign(message: nil)
@@ -63,11 +59,17 @@ defmodule BookifyWeb.BookImportLive.Index do
     {:noreply, assign(socket, show_modal: false)}
   end
 
-  def handle_info({:book_details_fetched, {:ok, book_params}}, socket) do
+  def handle_info(
+        {:book_details_fetched, {:ok, %{"author" => author_name} = book_params}},
+        socket
+      ) do
+    {authors, book_params} = create_author(author_name, book_params)
+
     changeset = Book.changeset(%Book{}, book_params)
 
     socket =
       socket
+      |> assign(authors: authors)
       |> assign(loading: false)
       |> assign(book: changeset |> Changeset.apply_changes())
 
@@ -172,5 +174,15 @@ defmodule BookifyWeb.BookImportLive.Index do
       />
     </.modal>
     """
+  end
+
+  defp create_author(author_name, book_params) do
+    {:ok, author} = Authors.create_if_not_exists(author_name)
+
+    authors =
+      Authors.list_authors()
+      |> select_options()
+
+    {authors, Map.put(book_params, "author_id", author.id)}
   end
 end
