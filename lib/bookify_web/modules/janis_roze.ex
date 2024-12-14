@@ -1,4 +1,5 @@
 defmodule BookifyWeb.Modules.JanisRoze do
+  require Logger
   import Meeseeks.XPath
   import Meeseeks.CSS
 
@@ -33,10 +34,12 @@ defmodule BookifyWeb.Modules.JanisRoze do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         parse_search_results(body)
 
-      {:ok, %Tesla.Env{body: _body}} ->
+      {:ok, %Tesla.Env{body: body}} ->
+        Logger.error("Book search failed, response: #{body}")
         {:error, "Something went wrong"}
 
       {:error, reason} ->
+        Logger.error("Book search failed, reason: #{reason}")
         {:error, reason}
     end
   end
@@ -52,14 +55,16 @@ defmodule BookifyWeb.Modules.JanisRoze do
       "max_cost" => "10"
     }
 
-    case Tesla.get(client(), "/", query: params) do
+    case Tesla.get(client(), "/", query: params) |> dbg() do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         parse_detail_results(body, image_url)
 
-      {:ok, %Tesla.Env{body: _body}} ->
+      {:ok, %Tesla.Env{body: body}} ->
+        Logger.error("Book detail fetch failed, response: #{body}")
         {:error, "Something went wrong"}
 
       {:error, reason} ->
+        Logger.error("Book detail fetch failed, reason: #{reason}")
         {:error, reason}
     end
   end
