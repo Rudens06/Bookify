@@ -12,6 +12,7 @@ defmodule Bookify.Authors.Author do
     field :birth_year, :integer
     field :biography, :string
     field :image_url, :string
+    field :image_filename, :string
     field :wikipedia_url, :string
     has_many :books, Book
 
