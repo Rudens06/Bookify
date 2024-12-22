@@ -55,7 +55,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
       "max_cost" => "10"
     }
 
-    case Tesla.get(client(), "/", query: params) |> dbg() do
+    case Tesla.get(client(), "/", query: params) do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         parse_detail_results(body, image_url)
 

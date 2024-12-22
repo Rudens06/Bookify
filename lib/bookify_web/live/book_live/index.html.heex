@@ -5,7 +5,7 @@
     <.button :if={is_admin?(@current_user)} phx-click="add_book">Add Book</.button>
   </div>
   <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div :for={book <- @books}>
+    <div :for={book <- @books} class="flex flex-col justify-between">
       <.live_component
         module={BookifyWeb.BookComponent}
         id={book.id}
@@ -16,7 +16,7 @@
         :if={is_admin?(@current_user)}
         phx-click="edit_book"
         phx-value-isbn={book.isbn}
-        class="mt-2"
+        class="w-20 mt-2"
       >
         Edit
       </.button>

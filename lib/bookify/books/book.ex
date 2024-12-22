@@ -33,6 +33,7 @@ defmodule Bookify.Books.Book do
     field :publish_year, :integer
     field :page_count, :integer
     field :cover_image_url, :string
+    field :cover_image_filename, :string
     field :anotation, :string
     belongs_to :author, Author
     has_many :reviews, Review
@@ -40,7 +41,7 @@ defmodule Bookify.Books.Book do
     timestamps()
   end
 
-  def changeset(book, attrs) do
+  def changeset(book, attrs \\ %{}) do
     book
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)

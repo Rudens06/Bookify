@@ -12,7 +12,12 @@
         <div class="text-2xl font-bold font-serif mt-2"><%= author.name %></div>
       </.link>
 
-      <.button :if={is_admin?(@current_user)} phx-click="edit_author" phx-value-id={author.id}>
+      <.button
+        :if={is_admin?(@current_user)}
+        phx-click="edit_author"
+        class="mt-2"
+        phx-value-id={author.id}
+      >
         Edit
       </.button>
     </div>
