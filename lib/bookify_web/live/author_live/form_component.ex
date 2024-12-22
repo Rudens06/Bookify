@@ -55,7 +55,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Author updated successfully")
-         |> push_navigate(to: socket.assigns.patch)}
+         |> redirect(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -68,7 +68,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Author created successfully")
-         |> push_navigate(to: socket.assigns.patch)}
+         |> redirect(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
