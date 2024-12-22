@@ -21,16 +21,18 @@ defmodule BookifyWeb.BookListComponent do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col">
-      <h2 class="text-2xl font-bold mb-4"><%= String.capitalize(@list.name) %></h2>
-      <div class="grid grid-cols-2 lg:grid-cols-6">
-        <%= for book <- @list.books do %>
-          <.live_component
-            module={BookifyWeb.BookListItem}
-            book={book}
-            id={@list.name <> Integer.to_string(book.id)}
-          />
-        <% end %>
-      </div>
+      <%= if @list.books != [] do %>
+        <h2 class="text-2xl font-bold mb-4"><%= String.capitalize(@list.name) %></h2>
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-2 rounded-lg bg-gray-200 p-2">
+          <%= for book <- @list.books do %>
+            <.live_component
+              module={BookifyWeb.BookListItem}
+              book={book}
+              id={@list.name <> Integer.to_string(book.id)}
+            />
+          <% end %>
+        </div>
+      <% end %>
     </div>
     """
   end
