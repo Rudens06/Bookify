@@ -51,11 +51,13 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
 
   defp save_author(socket, :edit, author_params) do
     case Authors.update_author(socket.assigns.author, author_params) do
-      {:ok, _author} ->
+      {:ok, author} ->
+        notify_parent({:saved, author})
+
         {:noreply,
          socket
          |> put_flash(:info, "Author updated successfully")
-         |> redirect(to: socket.assigns.patch)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -64,14 +66,18 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
 
   defp save_author(socket, :new, author_params) do
     case Authors.create_author(author_params) do
-      {:ok, _author} ->
+      {:ok, author} ->
+        notify_parent({:saved, author})
+
         {:noreply,
          socket
          |> put_flash(:info, "Author created successfully")
-         |> redirect(to: socket.assigns.patch)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
+
+  defp notify_parent(msg), do: send(self(), msg)
 end

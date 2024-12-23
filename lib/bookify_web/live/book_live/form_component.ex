@@ -83,11 +83,14 @@ defmodule BookifyWeb.BookLive.FormComponent do
 
   defp save_book(socket, :edit, book_params) do
     case Books.update_book(socket.assigns.book, book_params) do
-      {:ok, _book} ->
+      {:ok, book} ->
+        book = Books.preload(book, [:author])
+        notify_parent({:saved, book})
+
         {:noreply,
          socket
          |> put_flash(:info, "Book updated successfully")
-         |> redirect(to: socket.assigns.patch)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -96,16 +99,21 @@ defmodule BookifyWeb.BookLive.FormComponent do
 
   defp save_book(socket, :new, book_params) do
     case Books.create_book(book_params) do
-      {:ok, _book} ->
+      {:ok, book} ->
+        book = Books.preload(book, [:author])
+        notify_parent({:saved, book})
+
         {:noreply,
          socket
          |> put_flash(:info, "Book created successfully")
-         |> redirect(to: socket.assigns.patch)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
+
+  defp notify_parent(msg), do: send(self(), msg)
 
   defp transform_genres(changeset, genres) do
     Ecto.Changeset.put_change(changeset, :genres, genres_to_string(genres))

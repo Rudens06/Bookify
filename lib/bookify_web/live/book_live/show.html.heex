@@ -111,18 +111,13 @@
     current_user={@current_user}
   />
 </div>
-<.modal
-  :if={@live_action in [:edit]}
-  id="book-modal"
-  show
-  on_cancel={JS.patch(~p"/books/#{@book.isbn}")}
->
+<.modal :if={@modal_action in [:edit]} id="book-modal" show on_cancel={JS.push("dismiss_modal")}>
   <.live_component
     id="book-form-component"
     module={BookifyWeb.BookLive.FormComponent}
     book={@book}
     authors={@authors}
-    action={@live_action}
+    action={@modal_action}
     loading={false}
     patch={~p"/books/#{@book.isbn}"}
   />
