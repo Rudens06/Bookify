@@ -1,0 +1,210 @@
+openapi: 3.1.0
+info:
+  title: Bookify API
+  version: 1.0.0
+servers:
+  - url: https://bookify-dev.fly.dev
+paths:
+  /api/v1/books:
+    get:
+      summary: List all books
+      operationId: listBooks
+      tags:
+        - Books
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 50
+        required: false
+        description: The number of items to return.
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: The number of items to skip before starting to collect the result set.
+      responses:
+        '200':
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+  /api/v1/books/{isbn}:
+    get:
+      summary: Get a book by ISBN
+      operationId: getBookByIsbn
+      tags:
+        - Books
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+  /api/v1/authors:
+    get:
+      summary: List all authors
+      operationId: listAuthors
+      tags:
+        - Authors
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 50
+        required: false
+        description: The number of items to return.
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: The number of items to skip before starting to collect the result set.
+      responses:
+        '200':
+          description: A list of authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+  /api/v1/authors/{id}:
+    get:
+      summary: Get an author by ID
+      operationId: getAuthorById
+      tags:
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+  /api/v1/books/{isbn}/reviews:
+    get:
+      summary: List all reviews for a book
+      operationId: listBookReviews
+      tags:
+        - Reviews
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+  /api/v1/books/{isbn}/reviews/{id}:
+    get:
+      summary: Get a review by ID
+      operationId: getReviewById
+      tags:
+        - Reviews
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The requested review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        isbn:
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        publish_year:
+          type: integer
+        page_count:
+          type: integer
+        cover_image_url:
+          type: string
+        anotation:
+          type: string
+        author_id:
+          type: integer
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        birth_year:
+          type: integer
+        death_year:
+          type: integer
+        biography:
+          type: string
+        image_url:
+          type: string
+        wikipedia_url:
+          type: string
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        body:
+          type: string
+        rating:
+          type: number
+          format: float
+        book_id:
+          type: integer
+        user_id:
+          type: integer
