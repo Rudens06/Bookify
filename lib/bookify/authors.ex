@@ -5,8 +5,17 @@ defmodule Bookify.Authors do
 
   @not_found_message "Author not found"
 
-  def list_authors do
-    Repo.all(Author)
+  def list_authors() do
+    Repo.all(Author, order_by: [asc: :name])
+  end
+
+  def list_authors(limit, offset) do
+    Repo.all(
+      from a in Author,
+        limit: ^limit,
+        offset: ^offset,
+        order_by: [asc: :name]
+    )
   end
 
   def get_author(id, preloads \\ []) do
@@ -19,12 +28,14 @@ defmodule Bookify.Authors do
     end
   end
 
-  def search_authors(query, preloads \\ []) do
+  def search_authors(query, limit, offset, preloads \\ []) do
     query = "%#{query}%"
 
     Repo.all(
       from a in Author,
         where: ilike(a.name, ^query),
+        limit: ^limit,
+        offset: ^offset,
         preload: ^preloads
     )
   end
