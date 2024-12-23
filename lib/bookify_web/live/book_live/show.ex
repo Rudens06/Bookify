@@ -8,7 +8,9 @@ defmodule BookifyWeb.BookLive.Show do
   alias Bookify.Books.Book
 
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok,
+     socket
+     |> assign(:modal_action, nil)}
   end
 
   def handle_params(%{"isbn" => isbn}, _url, socket) do
@@ -22,7 +24,7 @@ defmodule BookifyWeb.BookLive.Show do
           socket
           |> assign(:book, book)
           |> assign(:authors, authors)
-          |> assign(:page_title, page_title(socket.assigns.live_action))
+          |> assign(:page_title, book.title)
 
         {:error, {:not_found, message}} ->
           socket
@@ -34,25 +36,54 @@ defmodule BookifyWeb.BookLive.Show do
   end
 
   def handle_event("edit_book", _params, socket) do
-    book = socket.assigns.book
-    {:noreply, push_navigate(socket, to: ~p"/books/#{book.isbn}/show/edit")}
+    user = current_user(socket)
+
+    if is_admin?(user) do
+      {:noreply, socket |> assign(:modal_action, :edit)}
+    else
+      not_allowed(socket)
+    end
   end
 
   def handle_event("delete_book", _params, socket) do
-    book = socket.assigns.book
+    user = current_user(socket)
 
-    socket =
-      case Books.delete_book(book) do
-        {:ok, _} ->
-          put_flash(socket, :info, "Book deleted successfully")
+    if is_admin?(user) do
+      book = socket.assigns.book
 
-        {:error, _} ->
-          put_flash(socket, :error, "Something went wrong")
-      end
+      socket =
+        case Books.delete_book(book) do
+          {:ok, _} ->
+            put_flash(socket, :info, "Book deleted successfully")
 
-    {:noreply, push_navigate(socket, to: ~p"/")}
+          {:error, _} ->
+            put_flash(socket, :error, "Something went wrong")
+        end
+
+      {:noreply, push_navigate(socket, to: ~p"/")}
+    else
+      not_allowed(socket)
+    end
   end
 
-  defp page_title(:show), do: "Show Book"
-  defp page_title(:edit), do: "Edit Book"
+  def handle_event("dismiss_modal", _params, socket) do
+    {:noreply, assign(socket, :modal_action, nil)}
+  end
+
+  def handle_info({:saved, book}, socket) do
+    socket =
+      socket
+      |> assign(:book, book)
+      |> assign(:modal_action, nil)
+      |> put_flash(:info, "Book updated successfully")
+
+    {:noreply, socket}
+  end
+
+  defp not_allowed(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "Not Allowed!")
+     |> push_navigate(to: ~p"/")}
+  end
 end

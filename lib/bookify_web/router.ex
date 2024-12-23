@@ -72,22 +72,6 @@ defmodule BookifyWeb.Router do
     end
   end
 
-  # Admin Routes
-  scope "/", BookifyWeb do
-    pipe_through [:browser, :require_admin_user]
-
-    live_session :require_admin_user,
-      on_mount: [{BookifyWeb.Plugs.Auth, :require_admin_user}] do
-      live "/authors/new", AuthorLive.Index, :new
-      live "/authors/:id/edit", AuthorLive.Index, :edit
-      live "/authors/:id/show/edit", AuthorLive.Show, :edit
-
-      live "/books/new", BookLive.Index, :new
-      live "/books/:isbn/edit", BookLive.Index, :edit
-      live "/books/:isbn/show/edit", BookLive.Show, :edit
-    end
-  end
-
   # Unauthenticated Routes
   scope "/", BookifyWeb do
     pipe_through :browser

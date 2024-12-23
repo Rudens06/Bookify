@@ -7,7 +7,9 @@ defmodule BookifyWeb.AuthorLive.Show do
   alias Bookify.Authors.Author
 
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok,
+     socket
+     |> assign(:modal_action, nil)}
   end
 
   def handle_params(%{"id" => id}, _, socket) do
@@ -17,7 +19,7 @@ defmodule BookifyWeb.AuthorLive.Show do
           case Authors.get_author(id, [:books]) do
             author = %Author{} ->
               socket
-              |> assign(:page_title, page_title(socket.assigns.live_action))
+              |> assign(:page_title, author.name)
               |> assign(:author, author)
 
             {:error, {:not_found, message}} ->
@@ -36,25 +38,54 @@ defmodule BookifyWeb.AuthorLive.Show do
   end
 
   def handle_event("edit_author", _params, socket) do
-    author = socket.assigns.author
-    {:noreply, push_navigate(socket, to: ~p"/authors/#{author.id}/show/edit")}
+    user = current_user(socket)
+
+    if is_admin?(user) do
+      {:noreply, socket |> assign(:modal_action, :edit)}
+    else
+      not_allowed(socket)
+    end
   end
 
   def handle_event("delete_author", _params, socket) do
-    author = socket.assigns.author
+    user = current_user(socket)
 
-    socket =
-      case Authors.delete_author(author) do
-        {:ok, _} ->
-          put_flash(socket, :info, "Author deleted successfully")
+    if is_admin?(user) do
+      author = socket.assigns.author
 
-        {:error, _} ->
-          put_flash(socket, :error, "Something went wrong")
-      end
+      socket =
+        case Authors.delete_author(author) do
+          {:ok, _} ->
+            put_flash(socket, :info, "Author deleted successfully")
 
-    {:noreply, push_navigate(socket, to: ~p"/authors")}
+          {:error, _} ->
+            put_flash(socket, :error, "Something went wrong")
+        end
+
+      {:noreply, push_navigate(socket, to: ~p"/authors")}
+    else
+      not_allowed(socket)
+    end
   end
 
-  defp page_title(:show), do: "Show Author"
-  defp page_title(:edit), do: "Edit Author"
+  def handle_event("dismiss_modal", _params, socket) do
+    {:noreply, assign(socket, :modal_action, nil)}
+  end
+
+  def handle_info({:saved, author}, socket) do
+    socket =
+      socket
+      |> assign(:author, author)
+      |> assign(:modal_action, nil)
+      |> put_flash(:info, "Author updated successfully")
+
+    {:noreply, socket}
+  end
+
+  defp not_allowed(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "Not Allowed!")
+     |> push_navigate(to: ~p"/authors")}
+  end
 end

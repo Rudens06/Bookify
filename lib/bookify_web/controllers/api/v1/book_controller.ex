@@ -6,8 +6,15 @@ defmodule BookifyWeb.Api.V1.BookController do
 
   action_fallback BookifyWeb.FallbackController
 
-  def index(conn, _params) do
-    books = Books.list_books()
+  @default_limit "50"
+  @max_limit "100"
+  @default_offset "0"
+
+  def index(conn, params) do
+    limit = limit(params)
+    offset = offset(params)
+
+    books = Books.list_books(limit, offset)
     render(conn, :index, books: books)
   end
 
@@ -50,6 +57,28 @@ defmodule BookifyWeb.Api.V1.BookController do
 
       error ->
         error
+    end
+  end
+
+  defp limit(params) do
+    case Map.get(params, "limit", @default_limit)
+         |> Integer.parse() do
+      {limit, _} ->
+        if limit > @max_limit, do: @default_limit, else: limit
+
+      :error ->
+        @default_limit
+    end
+  end
+
+  defp offset(params) do
+    case Map.get(params, "offset", @default_offset)
+         |> Integer.parse() do
+      {offset, _} ->
+        offset
+
+      :error ->
+        @default_offset
     end
   end
 end
