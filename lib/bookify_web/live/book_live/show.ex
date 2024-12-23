@@ -24,7 +24,7 @@ defmodule BookifyWeb.BookLive.Show do
           socket
           |> assign(:book, book)
           |> assign(:authors, authors)
-          |> assign(:page_title, page_title(socket.assigns.live_action))
+          |> assign(:page_title, book.title)
 
         {:error, {:not_found, message}} ->
           socket
@@ -79,9 +79,6 @@ defmodule BookifyWeb.BookLive.Show do
 
     {:noreply, socket}
   end
-
-  defp page_title(:show), do: "Show Book"
-  defp page_title(:edit), do: "Edit Book"
 
   defp not_allowed(socket) do
     {:noreply,
