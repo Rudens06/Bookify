@@ -4,32 +4,58 @@
     </.input>
     <.button :if={is_admin?(@current_user)} phx-click="add_book">Add Book</.button>
   </div>
-  <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div :for={book <- @books} class="flex flex-col justify-between">
+  <div
+    id="books"
+    phx-update="stream"
+    phx-debounce="500"
+    phx-viewport-bottom="load_more"
+    class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-8"
+  >
+    <div
+      :for={{id, book} <- @streams.books}
+      id={id}
+      class="flex flex-col justify-between duration-200"
+    >
       <.live_component
         module={BookifyWeb.BookComponent}
         id={book.id}
         book={book}
         current_user={@current_user}
       />
-      <.button
-        :if={is_admin?(@current_user)}
-        phx-click="edit_book"
-        phx-value-isbn={book.isbn}
-        class="w-20 mt-2"
-      >
-        Edit
-      </.button>
+      <div class="flex gap-2 mt-2">
+        <.button
+          :if={is_admin?(@current_user)}
+          phx-click="edit_book"
+          phx-value-isbn={book.isbn}
+          class="w-20"
+        >
+          Edit
+        </.button>
+        <.button
+          :if={is_admin?(@current_user)}
+          phx-click="delete_book"
+          phx-value-isbn={book.isbn}
+          data-confirm="Are you sure?"
+          class="w-20 bg-red-600 hover:bg-red-700"
+        >
+          Delete
+        </.button>
+      </div>
     </div>
   </div>
 </div>
-<.modal :if={@live_action in [:new, :edit]} id="book-modal" show on_cancel={JS.patch(~p"/")}>
+<.modal
+  :if={@modal_action in [:new, :edit]}
+  id="book-modal"
+  show
+  on_cancel={JS.push("dismiss_modal")}
+>
   <.live_component
     id="book-form-component"
     module={BookifyWeb.BookLive.FormComponent}
     authors={@authors}
     book={@book}
-    action={@live_action}
+    action={@modal_action}
     loading={false}
     patch={~p"/"}
   />

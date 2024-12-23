@@ -5,8 +5,14 @@
 
     <.button :if={is_admin?(@current_user)} phx-click="add_author">Add Author</.button>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div :for={author <- @authors} class="m-5 transition-transform duration-400 hover:scale-105">
+  <div
+    id="authors"
+    phx-update="stream"
+    phx-debounce="500"
+    phx-viewport-bottom="load_more"
+    class="grid grid-cols-1 md:grid-cols-3 gap-8"
+  >
+    <div :for={{id, author} <- @streams.authors} id={id} class="m-5 transition-transform">
       <.link navigate={~p"/authors/#{author.id}"}>
         <img src={author.image_url} class="h-96 drop-shadow-lg rounded-lg" />
         <div class="text-2xl font-bold font-serif mt-2"><%= author.name %></div>
@@ -15,25 +21,34 @@
       <.button
         :if={is_admin?(@current_user)}
         phx-click="edit_author"
-        class="mt-2"
+        class="mt-2 w-20"
         phx-value-id={author.id}
       >
         Edit
+      </.button>
+      <.button
+        :if={is_admin?(@current_user)}
+        phx-click="delete_author"
+        class="mt-2 w-20 bg-red-600 hover:bg-red-700"
+        data-confirm="Are you sure?"
+        phx-value-id={author.id}
+      >
+        Delete
       </.button>
     </div>
   </div>
 </div>
 <.modal
-  :if={@live_action in [:new, :edit]}
+  :if={@modal_action in [:new, :edit]}
   id="author-modal"
   show
-  on_cancel={JS.patch(~p"/authors")}
+  on_cancel={JS.push("dismiss_modal")}
 >
   <.live_component
     id="author-form-component"
     module={BookifyWeb.AuthorLive.FormComponent}
     author={@author}
-    action={@live_action}
+    action={@modal_action}
     patch={~p"/authors"}
   />
 </.modal>
