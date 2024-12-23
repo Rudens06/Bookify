@@ -6,18 +6,25 @@ defmodule Bookify.Books do
 
   @not_found_message "Book not found"
 
-  def list_books(preloads \\ []) do
-    Repo.all(Book)
-    |> Repo.preload(preloads)
+  def list_books(limit, offset, preloads \\ []) do
+    Repo.all(
+      from b in Book,
+        limit: ^limit,
+        offset: ^offset,
+        order_by: [asc: :title],
+        preload: ^preloads
+    )
   end
 
-  def search_books(query, preloads \\ []) do
+  def search_books(query, limit, offset, preloads \\ []) do
     query = "%#{query}%"
 
     Repo.all(
       from b in Book,
         join: a in assoc(b, :author),
         where: ilike(b.title, ^query) or ilike(a.name, ^query),
+        limit: ^limit,
+        offset: ^offset,
         preload: ^preloads
     )
   end
@@ -43,6 +50,10 @@ defmodule Bookify.Books do
       book ->
         book
     end
+  end
+
+  def preload(book, preloads) do
+    Repo.preload(book, preloads)
   end
 
   def create_book(attrs \\ %{}) do
