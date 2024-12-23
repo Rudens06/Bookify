@@ -117,6 +117,16 @@ defmodule BookifyWeb.BookImportLive.Index do
     {:noreply, socket}
   end
 
+  def handle_info({:saved, _book}, socket) do
+    socket =
+      socket
+      |> put_flash(:info, "Book imported successfully")
+      |> assign(show_modal: false)
+      |> assign(loading: false)
+
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="mx-auto max-w-7xl rounded-lg border p-10 shadow-lg">
