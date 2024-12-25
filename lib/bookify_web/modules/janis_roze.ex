@@ -192,7 +192,8 @@ defmodule BookifyWeb.Modules.JanisRoze do
 
     filename = url |> URI.parse() |> Map.fetch!(:path) |> Path.basename()
     image_binary = response.body
-    directory = "priv/static/uploads"
+    priv_dir = :code.priv_dir(:bookify)
+    directory = Path.join(priv_dir, "static/uploads")
     filepath = Path.join(directory, filename)
 
     File.mkdir_p(directory)
