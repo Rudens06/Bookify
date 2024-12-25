@@ -12,6 +12,10 @@ kill_signal = 'SIGTERM'
 [deploy]
   release_command = '/app/bin/migrate'
 
+[mounts]
+  source="storage_dir"
+  destination="/priv/static/uploads"
+
 [env]
   PHX_HOST = 'bookify-dev.fly.dev'
   PORT = '8080'
