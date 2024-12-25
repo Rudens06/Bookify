@@ -1,6 +1,6 @@
 <div class="book-component flex flex-col justify-between">
   <.link navigate={~p"/books/#{@book.isbn}"}>
-    <img src={@book.cover_image_url} class="h-96 drop-shadow-lg rounded-lg" />
+    <img src={image(@book)} class="h-96 w-64 object-cover drop-shadow-lg rounded-lg" />
     <div class="text-2xl font-bold font-serif mt-2 hover:text-gray-600"><%= @book.title %></div>
     <div class="text-sm text-gray-500 font-sans mt-1"><%= @book.author.name %></div>
   </.link>

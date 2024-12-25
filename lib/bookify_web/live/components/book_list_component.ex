@@ -23,7 +23,7 @@ defmodule BookifyWeb.BookListComponent do
     <div class="flex flex-col">
       <%= if @list.books != [] do %>
         <h2 class="text-2xl font-bold mb-4"><%= String.capitalize(@list.name) %></h2>
-        <div class="grid grid-cols-2 lg:grid-cols-6 gap-2 rounded-lg bg-gray-200 p-2">
+        <div class="grid grid-cols-2 lg:grid-cols-7 p-4 gap-2 rounded-lg bg-gray-200">
           <%= for book <- @list.books do %>
             <.live_component
               module={BookifyWeb.BookListItem}
