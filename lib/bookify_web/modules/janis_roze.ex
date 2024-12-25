@@ -104,7 +104,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
   end
 
   defp extract_detail_data(document, filename) do
-    image_path = "/images/covers/#{filename}"
+    image_path = "/uploads/#{filename}"
     breadcrumbs_xpath = "//*[@id='html-body']/div[3]/div[1]"
 
     title_xpath =
@@ -192,7 +192,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
 
     filename = url |> URI.parse() |> Map.fetch!(:path) |> Path.basename()
     image_binary = response.body
-    directory = "priv/static/images/covers"
+    directory = "priv/static/uploads"
     filepath = Path.join(directory, filename)
 
     File.mkdir_p(directory)
