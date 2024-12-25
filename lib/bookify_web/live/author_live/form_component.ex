@@ -1,6 +1,7 @@
 defmodule BookifyWeb.AuthorLive.FormComponent do
   use BookifyWeb, :live_component
   alias Bookify.Authors
+  alias BookifyWeb.Modules.LiveUploader
 
   def render(assigns) do
     ~H"""
@@ -24,6 +25,10 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
         <.input field={@form[:birth_year]} type="number" label="Birth year" />
         <.input field={@form[:biography]} type="textarea" label="Bio" />
         <.input field={@form[:image_url]} type="text" label="Image url" />
+        <div phx-drop-target={@uploads.author_image.ref}>
+          <label>Author Image</label>
+          <.live_file_input upload={@uploads.author_image} />
+        </div>
         <.input field={@form[:wikipedia_url]} type="text" label="Wikipedia url" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Author</.button>
@@ -31,6 +36,15 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
       </.simple_form>
     </div>
     """
+  end
+
+  def mount(socket) do
+    {:ok,
+     socket
+     |> allow_upload(:author_image,
+       accept: ~w(.jpg .jpeg .png),
+       max_entries: 1
+     )}
   end
 
   def update(assigns, socket) do
@@ -46,6 +60,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
   end
 
   def handle_event("save", %{"author" => author_params}, socket) do
+    author_params = handle_upload(author_params, socket)
     save_author(socket, socket.assigns.action, author_params)
   end
 
@@ -76,6 +91,16 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
+    end
+  end
+
+  defp handle_upload(book_params, socket) do
+    uploaded_files = LiveUploader.handle_upload(socket, :author_image)
+    dbg(uploaded_files)
+
+    case uploaded_files do
+      [filename | _] -> Map.put(book_params, "image_filename", filename)
+      _ -> book_params
     end
   end
 

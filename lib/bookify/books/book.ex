@@ -12,6 +12,7 @@ defmodule Bookify.Books.Book do
     :publish_year,
     :page_count,
     :cover_image_url,
+    :cover_image_filename,
     :anotation,
     :author_id
   ]

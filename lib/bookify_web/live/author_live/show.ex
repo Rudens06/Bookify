@@ -2,6 +2,7 @@ defmodule BookifyWeb.AuthorLive.Show do
   use BookifyWeb, :live_view
   import Bookify.Utils.User
   import Bookify.Utils.Integer
+  import Bookify.Utils.Image
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
