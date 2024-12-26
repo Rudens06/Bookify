@@ -6,6 +6,7 @@ defmodule BookifyWeb.BookLive.Index do
   alias Bookify.Books
   alias Bookify.Authors
   alias Bookify.Books.Book
+  alias BookifyWeb.Modules.LiveUploader
 
   @page_size 18
   @default_offset 0
@@ -103,6 +104,8 @@ defmodule BookifyWeb.BookLive.Index do
       socket =
         case Books.delete_book(book) do
           {:ok, _} ->
+            LiveUploader.delete_file(book.cover_image_filename)
+
             socket
             |> stream_delete(:books, book)
             |> put_flash(:info, "Book deleted successfully")

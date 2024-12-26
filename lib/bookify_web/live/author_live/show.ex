@@ -6,6 +6,7 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
+  alias BookifyWeb.Modules.LiveUploader
 
   def mount(_params, _session, socket) do
     {:ok,
@@ -54,16 +55,23 @@ defmodule BookifyWeb.AuthorLive.Show do
     if is_admin?(user) do
       author = socket.assigns.author
 
-      socket =
-        case Authors.delete_author(author) do
-          {:ok, _} ->
-            put_flash(socket, :info, "Author deleted successfully")
+      if author.books == [] do
+        socket =
+          case Authors.delete_author(author) do
+            {:ok, _} ->
+              LiveUploader.delete_file(author.image_filename)
+              put_flash(socket, :info, "Author deleted successfully")
 
-          {:error, _} ->
-            put_flash(socket, :error, "Something went wrong")
-        end
+            {:error, _} ->
+              put_flash(socket, :error, "Something went wrong")
+          end
 
-      {:noreply, push_navigate(socket, to: ~p"/authors")}
+        {:noreply, push_navigate(socket, to: ~p"/authors")}
+      else
+        {:noreply,
+         socket
+         |> put_flash(:error, "Author has books associated with it")}
+      end
     else
       not_allowed(socket)
     end

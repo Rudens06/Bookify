@@ -1,6 +1,8 @@
 defmodule BookifyWeb.Api.V1.BookController do
   use BookifyWeb, :controller
 
+  import Bookify.Utils.Image
+
   alias Bookify.Books
   alias Bookify.Books.Book
 
@@ -14,7 +16,10 @@ defmodule BookifyWeb.Api.V1.BookController do
     limit = limit(params)
     offset = offset(params)
 
-    books = Books.list_books(limit, offset)
+    books =
+      Books.list_books(limit, offset)
+      |> Enum.map(&put_full_image_url/1)
+
     render(conn, :index, books: books)
   end
 
@@ -29,6 +34,7 @@ defmodule BookifyWeb.Api.V1.BookController do
   def show(conn, %{"isbn" => isbn}) do
     case Books.get_book_by_isbn(isbn) do
       %Book{} = book ->
+        book = put_full_image_url(book)
         render(conn, :show, book: book)
 
       error ->
@@ -80,5 +86,9 @@ defmodule BookifyWeb.Api.V1.BookController do
       :error ->
         @default_offset
     end
+  end
+
+  defp put_full_image_url(book) do
+    Map.put(book, :cover_image_url, full_url(book.cover_image_filename))
   end
 end

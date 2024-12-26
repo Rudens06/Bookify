@@ -6,6 +6,7 @@ defmodule BookifyWeb.AuthorLive.Index do
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
+  alias BookifyWeb.Modules.LiveUploader
 
   @page_size 18
   @default_offset 0
@@ -94,21 +95,29 @@ defmodule BookifyWeb.AuthorLive.Index do
     user = current_user(socket)
 
     if is_admin?(user) do
-      author = Authors.get_author(id)
+      author = Authors.get_author(id, [:books])
 
-      socket =
-        case Authors.delete_author(author) do
-          {:ok, _} ->
-            socket
-            |> stream_delete(:authors, author)
-            |> put_flash(:info, "Author deleted successfully")
+      if author.books == [] do
+        socket =
+          case Authors.delete_author(author) do
+            {:ok, _} ->
+              LiveUploader.delete_file(author.image_filename)
 
-          {:error, _} ->
-            socket
-            |> put_flash(:error, "Something went wrong")
-        end
+              socket
+              |> stream_delete(:authors, author)
+              |> put_flash(:info, "Author deleted successfully")
 
-      {:noreply, socket}
+            {:error, _} ->
+              socket
+              |> put_flash(:error, "Something went wrong")
+          end
+
+        {:noreply, socket}
+      else
+        {:noreply,
+         socket
+         |> put_flash(:error, "Author has books associated with it")}
+      end
     else
       not_allowed(socket)
     end

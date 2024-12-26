@@ -14,4 +14,11 @@ defmodule BookifyWeb.Modules.LiveUploader do
       {:ok, unique_filename}
     end)
   end
+
+  def delete_file(nil), do: :ok
+
+  def delete_file(filename) do
+    target_path = Path.join(uploads_dir(), filename)
+    File.rm(target_path)
+  end
 end

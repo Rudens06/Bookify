@@ -47,9 +47,18 @@ defmodule BookifyWeb.BookLive.FormComponent do
           <.input field={@form[:page_count]} type="number" min="1" label="Page count" />
           <.input field={@form[:publish_year]} type="number" min="1" label="Publish year" />
           <div phx-drop-target={@uploads.cover_image.ref}>
-            <label>Cover Image</label>
+            <div class="mb-2 text-sm font-semibold">Cover Image</div>
             <.live_file_input upload={@uploads.cover_image} />
           </div>
+          <%= for entry <- @uploads.cover_image.entries do %>
+            <.live_img_preview entry={entry} class="w-48" />
+          <% end %>
+          <%= for {_ref, msg} <- @uploads.cover_image.errors do %>
+            <div class="text-red-500 text-lg font-bold">
+              <%= Phoenix.Naming.humanize(msg) <> "!" %>
+            </div>
+          <% end %>
+
           <.input field={@form[:cover_image_filename]} type="hidden" />
           <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
           <:actions>
@@ -66,6 +75,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
      socket
      |> allow_upload(:cover_image,
        accept: ~w(.jpg .jpeg .png),
+       max_file_size: 5_000_000,
        max_entries: 1
      )}
   end
@@ -78,6 +88,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:old_filename, book.cover_image_filename)
      |> assign(:form, to_form(Books.change_book(book)))}
   end
 
@@ -103,6 +114,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
   defp save_book(socket, :edit, book_params) do
     case Books.update_book(socket.assigns.book, book_params) do
       {:ok, book} ->
+        LiveUploader.delete_file(socket.assigns.old_filename)
         book = Books.preload(book, [:author])
         notify_parent({:saved, book})
 
@@ -134,8 +146,6 @@ defmodule BookifyWeb.BookLive.FormComponent do
 
   def handle_upload(book_params, socket) do
     uploaded_files = LiveUploader.handle_upload(socket, :cover_image)
-
-    dbg(uploaded_files)
 
     case uploaded_files do
       [filename | _] -> Map.put(book_params, "cover_image_filename", filename)
