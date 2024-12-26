@@ -14,7 +14,7 @@ kill_signal = 'SIGTERM'
 
 [mounts]
   source="storage_dir"
-  destination="/app/lib/bookify-0.1.0/priv/static/uploads"
+  destination="/app/uploads"
 
 [env]
   PHX_HOST = 'bookify-dev.fly.dev'
