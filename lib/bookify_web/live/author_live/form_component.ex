@@ -26,9 +26,17 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
         <.input field={@form[:biography]} type="textarea" label="Bio" />
         <.input field={@form[:image_url]} type="text" label="Image url" />
         <div phx-drop-target={@uploads.author_image.ref}>
-          <label>Author Image</label>
+          <div class="mb-2 text-sm font-semibold">Author Image</div>
           <.live_file_input upload={@uploads.author_image} />
         </div>
+        <%= for entry <- @uploads.author_image.entries do %>
+          <.live_img_preview entry={entry} class="w-48" />
+        <% end %>
+        <%= for {_ref, msg} <- @uploads.author_image.errors do %>
+          <div class="text-red-500 text-lg font-bold">
+            <%= Phoenix.Naming.humanize(msg) <> "!" %>
+          </div>
+        <% end %>
         <.input field={@form[:wikipedia_url]} type="text" label="Wikipedia url" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Author</.button>
@@ -43,6 +51,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
      socket
      |> allow_upload(:author_image,
        accept: ~w(.jpg .jpeg .png),
+       max_file_size: 5_000_000,
        max_entries: 1
      )}
   end
