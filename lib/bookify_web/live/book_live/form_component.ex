@@ -50,6 +50,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
             <label>Cover Image</label>
             <.live_file_input upload={@uploads.cover_image} />
           </div>
+          <.input field={@form[:cover_image_filename]} type="hidden" />
           <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
           <:actions>
             <.button phx-disable-with="Saving...">Save Book</.button>
@@ -133,6 +134,8 @@ defmodule BookifyWeb.BookLive.FormComponent do
 
   def handle_upload(book_params, socket) do
     uploaded_files = LiveUploader.handle_upload(socket, :cover_image)
+
+    dbg(uploaded_files)
 
     case uploaded_files do
       [filename | _] -> Map.put(book_params, "cover_image_filename", filename)

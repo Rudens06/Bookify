@@ -76,10 +76,10 @@ defmodule BookifyWeb.BookImportLive.Index do
     {:noreply, socket}
   end
 
-  def handle_info({:book_details_fetched, {:error, _reason}}, socket) do
+  def handle_info({:book_details_fetched, {:error, reason}}, socket) do
     socket =
       socket
-      |> put_flash(:error, "Something went wrong")
+      |> put_flash(:error, reason)
       |> assign(loading: false)
       |> assign(show_modal: false)
 
@@ -107,10 +107,10 @@ defmodule BookifyWeb.BookImportLive.Index do
     end
   end
 
-  def handle_info({:search_results_fetched, {:error, _reason}}, socket) do
+  def handle_info({:search_results_fetched, {:error, reason}}, socket) do
     socket =
       socket
-      |> put_flash(:error, "Something went wrong")
+      |> put_flash(:error, reason)
       |> assign(loading: false)
       |> assign(show_modal: false)
 
