@@ -5,9 +5,16 @@ defmodule Bookify.Utils.Image do
 
   @public_image_path "/uploads/"
   @not_found_image "/images/image-not-found.jpg"
+  @domain "https://bookify-dev.fly.dev"
 
   def image(%Author{} = author), do: resolve_image(author.image_filename)
   def image(%Book{} = book), do: resolve_image(book.cover_image_filename)
+
+  def full_url(nil), do: nil
+
+  def full_url(filename) do
+    @domain <> @public_image_path <> filename
+  end
 
   defp resolve_image(nil), do: @not_found_image
   defp resolve_image(""), do: @not_found_image

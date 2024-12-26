@@ -1,6 +1,8 @@
 defmodule BookifyWeb.Api.V1.AuthorController do
   use BookifyWeb, :controller
 
+  import Bookify.Utils.Image
+
   alias Bookify.Authors
   alias Bookify.Authors.Author
 
@@ -14,7 +16,10 @@ defmodule BookifyWeb.Api.V1.AuthorController do
     limit = limit(params)
     offset = offset(params)
 
-    authors = Authors.list_authors(limit, offset)
+    authors =
+      Authors.list_authors(limit, offset)
+      |> Enum.map(&put_full_image_url/1)
+
     render(conn, :index, authors: authors)
   end
 
@@ -29,6 +34,7 @@ defmodule BookifyWeb.Api.V1.AuthorController do
   def show(conn, %{"id" => id}) do
     case Authors.get_author(id) do
       %Author{} = author ->
+        author = put_full_image_url(author)
         render(conn, :show, author: author)
 
       error ->
@@ -80,5 +86,9 @@ defmodule BookifyWeb.Api.V1.AuthorController do
       :error ->
         @default_offset
     end
+  end
+
+  defp put_full_image_url(author) do
+    Map.put(author, :image_url, full_url(author.image_filename))
   end
 end
