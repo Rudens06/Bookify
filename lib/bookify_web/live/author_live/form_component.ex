@@ -96,7 +96,6 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
 
   defp handle_upload(book_params, socket) do
     uploaded_files = LiveUploader.handle_upload(socket, :author_image)
-    dbg(uploaded_files)
 
     case uploaded_files do
       [filename | _] -> Map.put(book_params, "image_filename", filename)

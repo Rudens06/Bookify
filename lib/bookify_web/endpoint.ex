@@ -1,5 +1,6 @@
 defmodule BookifyWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :bookify
+  import Bookify.Utils.Upload
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -22,6 +23,11 @@ defmodule BookifyWeb.Endpoint do
     from: :bookify,
     gzip: false,
     only: BookifyWeb.static_paths()
+
+  plug Plug.Static,
+    at: "/uploads",
+    from: uploads_dir(),
+    gzip: false
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

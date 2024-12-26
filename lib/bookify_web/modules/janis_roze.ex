@@ -2,6 +2,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
   require Logger
   import Meeseeks.XPath
   import Meeseeks.CSS
+  import Bookify.Utils.Upload
 
   use Tesla
   alias Floki
@@ -22,7 +23,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
   def fetch_search_results(query) do
     params = %{
       "api_key" => System.get_env("SCRAPER_API_KEY"),
-      "url" => "#{@search_url}?cat=#{@book_category}&q=#{URI.encode(query)}",
+      "url" => "#{@search_url}?cat=#{@book_category}&q=#{URI.encode_www_form(query)}",
       "render" => "true",
       "wait_for_selector" => ".product-items",
       "device_type" => "desktop",
@@ -36,11 +37,11 @@ defmodule BookifyWeb.Modules.JanisRoze do
 
       {:ok, %Tesla.Env{body: body}} ->
         Logger.error("Book search failed, response: #{body}")
-        {:error, "Something went wrong"}
+        {:error, "No books found!"}
 
       {:error, reason} ->
         Logger.error("Book search failed, reason: #{reason}")
-        {:error, reason}
+        {:error, "No books found!"}
     end
   end
 
@@ -76,9 +77,6 @@ defmodule BookifyWeb.Modules.JanisRoze do
       {:ok, book_data} ->
         book_params = format_book_params(book_data)
         {:ok, book_params}
-
-      {:error, reason} ->
-        {:error, reason}
     end
   end
 
@@ -104,7 +102,6 @@ defmodule BookifyWeb.Modules.JanisRoze do
   end
 
   defp extract_detail_data(document, filename) do
-    image_path = "/uploads/#{filename}"
     breadcrumbs_xpath = "//*[@id='html-body']/div[3]/div[1]"
 
     title_xpath =
@@ -115,50 +112,54 @@ defmodule BookifyWeb.Modules.JanisRoze do
 
     breadcrumbs = Meeseeks.one(document, xpath(breadcrumbs_xpath))
 
-    if breadcrumbs != nil do
-      table = Meeseeks.one(document, xpath(table_xpath))
-      table_rows = Meeseeks.all(table, css("tr"))
+    table = Meeseeks.one(document, xpath(table_xpath))
+    table_rows = Meeseeks.all(table, css("tr"))
 
-      title =
-        Meeseeks.one(document, xpath(title_xpath))
-        |> Meeseeks.text()
-        |> String.trim()
+    title =
+      Meeseeks.one(document, xpath(title_xpath))
+      |> Meeseeks.text()
+      |> String.trim()
 
-      anotation =
-        Meeseeks.one(document, xpath(anotation_xpath))
-        |> Meeseeks.text()
-        |> String.trim()
+    anotation =
+      Meeseeks.one(document, xpath(anotation_xpath))
+      |> Meeseeks.text()
+      |> String.trim()
 
-      book =
-        Enum.reduce(table_rows, %{}, fn row, acc ->
-          key =
-            row
-            |> Meeseeks.one(css("th"))
-            |> Meeseeks.text()
-            |> String.trim()
-            |> String.replace(" ", "_")
-            |> String.downcase()
+    book =
+      Enum.reduce(table_rows, %{}, fn row, acc ->
+        key =
+          row
+          |> Meeseeks.one(css("th"))
+          |> Meeseeks.text()
+          |> String.trim()
+          |> String.replace(" ", "_")
+          |> String.downcase()
 
-          value =
-            row
-            |> Meeseeks.one(css("td"))
-            |> Meeseeks.text()
-            |> String.trim()
+        value =
+          row
+          |> Meeseeks.one(css("td"))
+          |> Meeseeks.text()
+          |> String.trim()
 
-          Map.put(acc, key, value)
-        end)
+        Map.put(acc, key, value)
+      end)
 
-      book =
+    book =
+      book
+      |> Map.put("anotation", anotation)
+      |> Map.put("title", title)
+      |> Map.put("cover_image_filename", filename)
+
+    book =
+      if breadcrumbs != nil do
         book
-        |> Map.put("anotation", anotation)
-        |> Map.put("title", title)
-        |> Map.put("cover_image_url", image_path)
         |> Map.put("genres", extract_generes(breadcrumbs))
+      else
+        book
+        |> Map.put("genres", [])
+      end
 
-      {:ok, book}
-    else
-      {:error, "Breadcrumb not found"}
-    end
+    {:ok, book}
   end
 
   defp format_book_params(book_data) do
@@ -170,7 +171,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
         "genres" => book_data["genres"],
         "publish_year" => String.to_integer(book_data["izdošanas_gads"]),
         "page_count" => String.to_integer(book_data["lappušu_skaits"]),
-        "cover_image_url" => book_data["cover_image_url"],
+        "cover_image_filename" => book_data["cover_image_filename"],
         "anotation" => book_data["anotation"]
       }
     else
@@ -181,7 +182,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
         "genres" => book_data["genres"],
         "publish_year" => String.to_integer(book_data["publishing_year"]),
         "page_count" => String.to_integer(book_data["pages"]),
-        "cover_image_url" => book_data["cover_image_url"],
+        "cover_image_filename" => book_data["cover_image_filename"],
         "anotation" => book_data["anotation"]
       }
     end
@@ -190,13 +191,11 @@ defmodule BookifyWeb.Modules.JanisRoze do
   defp save_book_cover_image(url) do
     {:ok, response} = HTTPoison.get(url)
 
-    filename = url |> URI.parse() |> Map.fetch!(:path) |> Path.basename()
+    filename = filename(url)
     image_binary = response.body
-    priv_dir = :code.priv_dir(:bookify)
-    directory = Path.join(priv_dir, "static/uploads")
-    filepath = Path.join(directory, filename)
 
-    File.mkdir_p(directory)
+    filepath = Path.join(uploads_dir(), filename)
+
     File.write!(filepath, image_binary)
     {:ok, filename}
   end
@@ -213,5 +212,16 @@ defmodule BookifyWeb.Modules.JanisRoze do
       |> String.trim()
       |> String.downcase()
     end)
+  end
+
+  defp filename(url) do
+    filename =
+      url
+      |> URI.parse()
+      |> Map.fetch!(:path)
+      |> Path.basename()
+      |> Path.extname()
+
+    "#{UUID.uuid4()}#{filename}"
   end
 end

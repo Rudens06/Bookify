@@ -1,8 +1,8 @@
 defmodule Bookify.Utils.Image do
+  import Bookify.Utils.Upload
   alias Bookify.Books.Book
   alias Bookify.Authors.Author
 
-  @uploads_dir Path.join(:code.priv_dir(:bookify), "static/uploads")
   @public_image_path "/uploads/"
   @not_found_image "/images/image-not-found.jpg"
 
@@ -21,6 +21,6 @@ defmodule Bookify.Utils.Image do
   end
 
   defp file_path(filename) do
-    Path.join(@uploads_dir, filename)
+    Path.join(uploads_dir(), filename)
   end
 end

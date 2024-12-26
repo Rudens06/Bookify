@@ -7,6 +7,8 @@ defmodule Bookify.Application do
 
   @impl true
   def start(_type, _args) do
+    File.mkdir_p!(Bookify.Utils.Upload.uploads_dir())
+
     children = [
       # Start the Telemetry supervisor
       BookifyWeb.Telemetry,
