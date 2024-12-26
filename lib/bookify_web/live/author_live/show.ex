@@ -6,6 +6,7 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
+  alias BookifyWeb.Modules.LiveUploader
 
   def mount(_params, _session, socket) do
     {:ok,
@@ -57,6 +58,7 @@ defmodule BookifyWeb.AuthorLive.Show do
       socket =
         case Authors.delete_author(author) do
           {:ok, _} ->
+            LiveUploader.delete_file(author.image_filename)
             put_flash(socket, :info, "Author deleted successfully")
 
           {:error, _} ->
