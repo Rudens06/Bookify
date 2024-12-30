@@ -36,6 +36,8 @@ defmodule Bookify.Books.Book do
     field :cover_image_url, :string
     field :cover_image_filename, :string
     field :anotation, :string
+    field :avg_rating, :float, virtual: true
+    field :review_count, :integer, virtual: true
     belongs_to :author, Author
     has_many :reviews, Review
 
