@@ -13,13 +13,15 @@ defmodule Bookify.Reviews do
   def list_user_reviews(user_id, preloads \\ []) do
     Review
     |> where(user_id: ^user_id)
-    |> Repo.preload(preloads)
+    |> order_by(desc: :inserted_at)
     |> Repo.all()
+    |> Repo.preload(preloads)
   end
 
   def list_book_reviews(book_id) do
     Review
     |> where(book_id: ^book_id)
+    |> order_by(desc: :inserted_at)
     |> Repo.all()
     |> Repo.preload([:user])
   end
