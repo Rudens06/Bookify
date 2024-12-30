@@ -95,8 +95,8 @@ defmodule Bookify.Users.User do
     )
     |> validate_length(
       :password,
-      max: 72,
-      message: "Must not be longer than 72 characters"
+      max: 30,
+      message: "Must not be longer than 30 characters"
     )
     |> validate_format(:password, ~r/[a-z]/,
       message: "Must contain at least one lower case character"
