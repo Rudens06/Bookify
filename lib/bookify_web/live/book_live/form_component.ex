@@ -118,9 +118,14 @@ defmodule BookifyWeb.BookLive.FormComponent do
   end
 
   defp save_book(socket, :edit, book_params) do
+    upload_entries = socket.assigns.uploads.cover_image.entries
+
     case Books.update_book(socket.assigns.book, book_params) do
       {:ok, book} ->
-        LiveUploader.delete_file(socket.assigns.old_filename)
+        if upload_entries != [] do
+          LiveUploader.delete_file(socket.assigns.old_filename)
+        end
+
         book = Books.preload(book, [:author])
         notify_parent({:saved, book})
 

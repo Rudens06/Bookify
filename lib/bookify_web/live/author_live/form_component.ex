@@ -81,9 +81,14 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
   end
 
   defp save_author(socket, :edit, author_params) do
+    upload_entries = socket.assigns.uploads.author_image.entries
+
     case Authors.update_author(socket.assigns.author, author_params) do
       {:ok, author} ->
-        LiveUploader.delete_file(socket.assigns.old_filename)
+        if upload_entries != [] do
+          LiveUploader.delete_file(socket.assigns.old_filename)
+        end
+
         notify_parent({:saved, author})
 
         {:noreply,
