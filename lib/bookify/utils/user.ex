@@ -5,6 +5,8 @@ defmodule Bookify.Utils.User do
     struct.assigns.current_user
   end
 
+  def is_admin?(nil), do: false
+
   def is_admin?(user) do
     User.admin_role() in user.roles
   end
