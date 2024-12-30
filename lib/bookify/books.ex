@@ -1,54 +1,51 @@
 defmodule Bookify.Books do
   import Ecto.Query, warn: false
   alias Bookify.Repo
-
   alias Bookify.Books.Book
 
   @not_found_message "Book not found"
 
   def list_books(limit, offset, preloads \\ []) do
-    Repo.all(
-      from b in Book,
-        limit: ^limit,
-        offset: ^offset,
-        order_by: [asc: :title],
-        preload: ^preloads
-    )
+    base_book_query(preloads)
+    |> limit(^limit)
+    |> offset(^offset)
+    |> order_by([b], asc: b.title)
+    |> Repo.all()
   end
 
   def search_books(query, limit, offset, preloads \\ []) do
-    query = "%#{query}%"
+    search_term = "%#{query}%"
 
-    Repo.all(
-      from b in Book,
-        join: a in assoc(b, :author),
-        where: ilike(b.title, ^query) or ilike(a.name, ^query),
-        limit: ^limit,
-        offset: ^offset,
-        preload: ^preloads
-    )
+    base_book_query(preloads)
+    |> join(:inner, [b], a in assoc(b, :author))
+    |> where([b, a], ilike(b.title, ^search_term) or ilike(a.name, ^search_term))
+    |> limit(^limit)
+    |> offset(^offset)
+    |> order_by([b], asc: b.title)
+    |> Repo.all()
   end
 
-  def get_book!(id), do: Repo.get!(Book, id)
+  def get_book!(id, preloads \\ []) do
+    base_book_query(preloads)
+    |> where([b], b.id == ^id)
+    |> Repo.one!()
+  end
 
-  def get_book(id) do
-    case Repo.get(Book, id) do
-      nil ->
-        not_found()
-
-      book ->
-        book
+  def get_book(id, preloads \\ []) do
+    case base_book_query(preloads)
+         |> where([b], b.id == ^id)
+         |> Repo.one() do
+      nil -> not_found()
+      book -> book
     end
   end
 
   def get_book_by_isbn(isbn, preloads \\ []) do
-    case Repo.get_by(Book, isbn: isbn)
-         |> Repo.preload(preloads) do
-      nil ->
-        not_found()
-
-      book ->
-        book
+    case base_book_query(preloads)
+         |> where([b], b.isbn == ^isbn)
+         |> Repo.one() do
+      nil -> not_found()
+      book -> book
     end
   end
 
@@ -74,6 +71,18 @@ defmodule Bookify.Books do
 
   def change_book(%Book{} = book, attrs \\ %{}) do
     Book.changeset(book, attrs)
+  end
+
+  defp base_book_query(preloads) do
+    from b in Book,
+      left_join: r in assoc(b, :reviews),
+      group_by: b.id,
+      preload: ^preloads,
+      select: %{
+        b
+        | avg_rating: coalesce(avg(r.rating), 0.0),
+          review_count: count(r.id)
+      }
   end
 
   defp not_found() do
