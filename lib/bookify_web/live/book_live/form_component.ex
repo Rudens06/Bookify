@@ -1,5 +1,7 @@
 defmodule BookifyWeb.BookLive.FormComponent do
   use BookifyWeb, :live_component
+  import Bookify.Utils.Image
+
   alias Bookify.Books
   alias BookifyWeb.Modules.LiveUploader
 
@@ -50,13 +52,17 @@ defmodule BookifyWeb.BookLive.FormComponent do
             <div class="mb-2 text-sm font-semibold">Cover Image</div>
             <.live_file_input upload={@uploads.cover_image} />
           </div>
-          <%= for entry <- @uploads.cover_image.entries do %>
-            <.live_img_preview entry={entry} class="w-48" />
-          <% end %>
-          <%= for {_ref, msg} <- @uploads.cover_image.errors do %>
-            <div class="text-red-500 text-lg font-bold">
-              <%= Phoenix.Naming.humanize(msg) <> "!" %>
-            </div>
+          <%= if @uploads.cover_image.entries == [] do %>
+            <img src={image(@book)} class="w-48" />
+          <% else %>
+            <%= for entry <- @uploads.cover_image.entries do %>
+              <.live_img_preview entry={entry} class="w-48" />
+            <% end %>
+            <%= for {_ref, msg} <- @uploads.cover_image.errors do %>
+              <div class="text-red-500 text-lg font-bold">
+                <%= Phoenix.Naming.humanize(msg) <> "!" %>
+              </div>
+            <% end %>
           <% end %>
 
           <.input field={@form[:cover_image_filename]} type="hidden" />
