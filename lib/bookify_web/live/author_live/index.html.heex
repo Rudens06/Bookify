@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mx-auto">
   <div class="search max-w-md mx-auto">
     <.input name="query" value={@query} type="text" placeholder="Search..." phx-keyup="search">
     </.input>
@@ -10,11 +10,11 @@
     phx-update="stream"
     phx-debounce="500"
     phx-viewport-bottom="load_more"
-    class="grid grid-cols-1 md:grid-cols-3 gap-8"
+    class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8"
   >
     <div :for={{id, author} <- @streams.authors} id={id} class="m-5 transition-transform">
       <.link navigate={~p"/authors/#{author.id}"}>
-        <img src={image(author)} class="h-96 drop-shadow-lg rounded-lg object-cover" />
+        <img src={image(author)} class="h-96 min-w-56 drop-shadow-lg rounded-lg object-cover" />
         <div class="text-2xl font-bold font-serif mt-2"><%= author.name %></div>
       </.link>
 
@@ -48,6 +48,7 @@
     id="author-form-component"
     module={BookifyWeb.AuthorLive.FormComponent}
     author={@author}
+    current_user={@current_user}
     action={@modal_action}
     patch={~p"/authors"}
   />

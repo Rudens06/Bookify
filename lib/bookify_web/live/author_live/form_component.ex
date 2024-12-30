@@ -1,6 +1,7 @@
 defmodule BookifyWeb.AuthorLive.FormComponent do
   use BookifyWeb, :live_component
   import Bookify.Utils.Image
+  import Bookify.Utils.User
 
   alias Bookify.Authors
   alias BookifyWeb.Modules.LiveUploader
@@ -76,8 +77,13 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
   end
 
   def handle_event("save", %{"author" => author_params}, socket) do
-    author_params = handle_upload(author_params, socket)
-    save_author(socket, socket.assigns.action, author_params)
+    if current_user(socket) |> is_admin?() do
+      author_params = handle_upload(author_params, socket)
+      save_author(socket, socket.assigns.action, author_params)
+    else
+      not_allowed(socket)
+    end
+
   end
 
   defp save_author(socket, :edit, author_params) do
@@ -89,7 +95,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
           LiveUploader.delete_file(socket.assigns.old_filename)
         end
 
-        notify_parent({:saved, author})
+        notify_parent({:author_saved, author})
 
         {:noreply,
          socket
@@ -104,7 +110,7 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
   defp save_author(socket, :new, author_params) do
     case Authors.create_author(author_params) do
       {:ok, author} ->
-        notify_parent({:saved, author})
+        notify_parent({:author_saved, author})
 
         {:noreply,
          socket
@@ -126,4 +132,11 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
   end
 
   defp notify_parent(msg), do: send(self(), msg)
+
+  defp not_allowed(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "Not allowed!")
+     |> push_navigate(to: ~p"/")}
+  end
 end

@@ -144,7 +144,7 @@ defmodule BookifyWeb.AuthorLive.Index do
     {:noreply, assign(socket, :modal_action, nil)}
   end
 
-  def handle_info({:saved, author}, socket) do
+  def handle_info({:author_saved, author}, socket) do
     {:noreply,
      socket
      |> assign(:modal_action, nil)

@@ -1,6 +1,7 @@
 defmodule BookifyWeb.BookLive.FormComponent do
   use BookifyWeb, :live_component
   import Bookify.Utils.Image
+  import Bookify.Utils.User
 
   alias Bookify.Books
   alias BookifyWeb.Modules.LiveUploader
@@ -109,12 +110,16 @@ defmodule BookifyWeb.BookLive.FormComponent do
   end
 
   def handle_event("save", %{"book" => book_params}, socket) do
-    book_params =
-      book_params
-      |> handle_upload(socket)
-      |> transform_genres()
+    if current_user(socket) |> is_admin?() do
+      book_params =
+        book_params
+        |> handle_upload(socket)
+        |> transform_genres()
 
-    save_book(socket, socket.assigns.action, book_params)
+      save_book(socket, socket.assigns.action, book_params)
+    else
+      not_allowed(socket)
+    end
   end
 
   defp save_book(socket, :edit, book_params) do
@@ -127,7 +132,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
         end
 
         book = Books.preload(book, [:author])
-        notify_parent({:saved, book})
+        notify_parent({:book_saved, book})
 
         {:noreply,
          socket
@@ -143,7 +148,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
     case Books.create_book(book_params) do
       {:ok, book} ->
         book = Books.preload(book, [:author])
-        notify_parent({:saved, book})
+        notify_parent({:book_saved, book})
 
         {:noreply,
          socket
@@ -192,5 +197,12 @@ defmodule BookifyWeb.BookLive.FormComponent do
   defp genres_to_string(genres) do
     genres
     |> Enum.join(", ")
+  end
+
+  defp not_allowed(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "Not allowed!")
+     |> push_navigate(to: ~p"/")}
   end
 end
