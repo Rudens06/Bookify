@@ -148,7 +148,7 @@ defmodule BookifyWeb.AuthorLive.Index do
     {:noreply,
      socket
      |> assign(:modal_action, nil)
-     |> stream_insert(:authors, author)}
+     |> stream_insert(:authors, author, at: 0)}
   end
 
   defp not_allowed(socket) do
