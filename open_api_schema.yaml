@@ -179,6 +179,10 @@ components:
           type: integer
         page_count:
           type: integer
+        avg_rating:
+          type: number
+        review_count:
+          type: integer
         cover_image_url:
           type: string
         anotation:
