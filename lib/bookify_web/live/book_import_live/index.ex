@@ -177,6 +177,7 @@ defmodule BookifyWeb.BookImportLive.Index do
         id="book-import-form-component"
         module={BookifyWeb.BookLive.FormComponent}
         book={@book}
+        current_user={@current_user}
         authors={@authors}
         loading={@loading}
         action={:new}
