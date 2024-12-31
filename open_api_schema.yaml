@@ -13,6 +13,12 @@ paths:
         - Books
       parameters:
       - in: query
+        name: search
+        schema:
+          type: string
+        required: false
+        description: Returns books where book title or author name matches part of search query.
+      - in: query
         name: limit
         schema:
           type: integer
@@ -64,6 +70,12 @@ paths:
       tags:
         - Authors
       parameters:
+      - in: query
+        name: search
+        schema:
+          type: string
+        required: false
+        description: Returns authors where author name matches part of search query.
       - in: query
         name: limit
         schema:

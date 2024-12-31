@@ -15,10 +15,16 @@ defmodule BookifyWeb.Api.V1.AuthorController do
   def index(conn, params) do
     limit = limit(params)
     offset = offset(params)
+    search_query = Map.get(params, "search", nil)
 
     authors =
-      Authors.list_authors(limit, offset)
-      |> Enum.map(&put_full_image_url/1)
+      if search_query do
+          Authors.search_authors(search_query, limit, offset)
+          |> Enum.map(&put_full_image_url/1)
+      else
+          Authors.list_authors(limit, offset)
+          |> Enum.map(&put_full_image_url/1)
+      end
 
     render(conn, :index, authors: authors)
   end
