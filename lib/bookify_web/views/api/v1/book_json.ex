@@ -9,6 +9,8 @@ defmodule BookifyWeb.Api.V1.BookJSON do
     :publish_year,
     :page_count,
     :cover_image_url,
+    :avg_rating,
+    :review_count,
     :anotation
   ]
 
