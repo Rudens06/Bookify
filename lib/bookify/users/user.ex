@@ -9,7 +9,7 @@ defmodule Bookify.Users.User do
 
   @register_fields [:name, :email, :password, :password_confirmation]
   @required_register_fields [:name, :email, :password, :password_confirmation]
-  @update_fields [:username, :name, :public]
+  @update_fields [:name, :public]
 
   @admin_role "admin"
 
@@ -33,6 +33,7 @@ defmodule Bookify.Users.User do
   def update_changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, @update_fields)
+    |> validate_required([:name])
   end
 
   def login_changeset(user, attrs \\ %{}) do

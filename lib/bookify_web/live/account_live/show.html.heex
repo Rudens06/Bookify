@@ -18,7 +18,7 @@
           <input
             type="checkbox"
             class="sr-only peer"
-            phx-click="toggle_public"
+            phx-click="toggle_profile_visibility"
             checked={@current_user.public}
           />
 
@@ -29,6 +29,9 @@
           </span>
         </label>
       </div>
+      <.button phx-click="edit_profile" class="mt-2">
+        Edit Profile
+      </.button>
       <div class="api-token-controls mt-4">
         <.button
           class="mt-2"
@@ -95,3 +98,10 @@
     />
   <% end %>
 </div>
+<.modal :if={@show_user_modal} id="user-modal" show on_cancel={JS.push("dismiss_modal")}>
+  <.live_component
+    id="user-form-component"
+    module={BookifyWeb.AccountLive.FormComponent}
+    current_user={@current_user}
+  />
+</.modal>
