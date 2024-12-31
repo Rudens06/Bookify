@@ -1,4 +1,5 @@
 defmodule BookifyWeb.ListActionButtonComponent do
+  import Bookify.Utils.User
   use BookifyWeb, :live_component
   alias Bookify.Lists
   alias Bookify.Books
@@ -7,44 +8,61 @@ defmodule BookifyWeb.ListActionButtonComponent do
     user = assigns.current_user
 
     list =
-      case Lists.get_list_by_name(assigns.list_name, user.id, [:books]) do
-        {:error, _} ->
-          case Lists.create_list(user, %{name: assigns.list_name}) do
-            {:ok, list} ->
-              list
+      if user do
+        case Lists.get_list_by_name(assigns.list_name, user.id, [:books]) do
+          {:error, _} ->
+            nil
 
-            {:error, _} ->
-              throw("Could not create list")
-          end
-
-        list ->
-          list
+          list ->
+            list
+        end
+      else
+        nil
       end
 
-    book_in_list? = Lists.has_book?(list, assigns.book.id)
+    book_in_list? =
+      if user do
+        case list do
+          nil ->
+            false
+
+          list ->
+            Lists.has_book?(list, assigns.book.id)
+        end
+      else
+        false
+      end
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(book_in_list?: book_in_list?)
-     |> assign(favorites: list)}
+     |> assign(list: list)}
   end
 
   def handle_event("toggle_item", %{"book_id" => book_id}, socket) do
-    book = Books.get_book!(book_id)
-    list = socket.assigns.favorites
-    book_in_list? = socket.assigns.book_in_list?
+    user = current_user(socket)
 
-    if not book_in_list? do
-      Lists.add_book(list, book)
+    if user do
+      book = Books.get_book!(book_id)
+      list = list(socket.assigns.list_name, user)
+      book_in_list? = socket.assigns.book_in_list?
+
+      if not book_in_list? do
+        Lists.add_book(list, book)
+      else
+        list_book = Lists.get_list_book(list.id, book.id)
+        Lists.remove_book(list_book)
+      end
+
+      book_in_list? = not book_in_list?
+      {:noreply, assign(socket, book_in_list?: book_in_list?)}
     else
-      list_book = Lists.get_list_book(list.id, book.id)
-      Lists.remove_book(list_book)
+      {:noreply,
+        socket
+        |> put_flash(:error, "You must be logged in to add books to your lists")
+        |> redirect(to: ~p"/accounts/login")}
     end
-
-    book_in_list? = not book_in_list?
-
-    {:noreply, socket |> assign(book_in_list?: book_in_list?)}
   end
 
   def render(assigns) do
@@ -57,5 +75,25 @@ defmodule BookifyWeb.ListActionButtonComponent do
       <% end %>
     </button>
     """
+  end
+
+  defp list(list_name, user) do
+    case Lists.get_list_by_name(list_name, user.id, [:books]) do
+      {:error, _} ->
+        create_list(list_name, user)
+
+      list ->
+        list
+    end
+  end
+
+  defp create_list(list_name, user) do
+    case Lists.create_list(user, %{name: list_name}) do
+      {:ok, list} ->
+        list
+
+      {:error, _} ->
+        throw("Could not create list")
+    end
   end
 end
