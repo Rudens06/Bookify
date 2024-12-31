@@ -10,4 +10,8 @@ defmodule Bookify.Utils.User do
   def is_admin?(user) do
     User.admin_role() in user.roles
   end
+
+  def is_resource_owner?(user, resource) do
+    resource.user_id == user.id
+  end
 end
