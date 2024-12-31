@@ -117,7 +117,7 @@ defmodule BookifyWeb.BookImportLive.Index do
     {:noreply, socket}
   end
 
-  def handle_info({:saved, _book}, socket) do
+  def handle_info({:book_saved, _book}, socket) do
     socket =
       socket
       |> put_flash(:info, "Book imported successfully")
