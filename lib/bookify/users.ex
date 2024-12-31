@@ -50,6 +50,10 @@ defmodule Bookify.Users do
     Repo.delete(user)
   end
 
+  def change_user(%User{} = user, attrs \\ %{}) do
+    User.update_changeset(user, attrs)
+  end
+
   def generate_new_api_token(user) do
     generate_token(user.id, :api)
   end

@@ -14,7 +14,7 @@ defmodule BookifyWeb.AuthorLive.Show do
      |> assign(:modal_action, nil)}
   end
 
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(%{"id" => id}, _url, socket) do
     socket =
       case validate_integer_id(id) do
         {:ok, id} ->
@@ -81,7 +81,7 @@ defmodule BookifyWeb.AuthorLive.Show do
     {:noreply, assign(socket, :modal_action, nil)}
   end
 
-  def handle_info({:saved, author}, socket) do
+  def handle_info({:author_saved, author}, socket) do
     socket =
       socket
       |> assign(:author, author)

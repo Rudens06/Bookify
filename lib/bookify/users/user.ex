@@ -9,7 +9,7 @@ defmodule Bookify.Users.User do
 
   @register_fields [:name, :email, :password, :password_confirmation]
   @required_register_fields [:name, :email, :password, :password_confirmation]
-  @update_fields [:username, :name, :public]
+  @update_fields [:name, :public]
 
   @admin_role "admin"
 
@@ -33,6 +33,7 @@ defmodule Bookify.Users.User do
   def update_changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, @update_fields)
+    |> validate_required([:name])
   end
 
   def login_changeset(user, attrs \\ %{}) do
@@ -95,8 +96,8 @@ defmodule Bookify.Users.User do
     )
     |> validate_length(
       :password,
-      max: 72,
-      message: "Must not be longer than 72 characters"
+      max: 30,
+      message: "Must not be longer than 30 characters"
     )
     |> validate_format(:password, ~r/[a-z]/,
       message: "Must contain at least one lower case character"

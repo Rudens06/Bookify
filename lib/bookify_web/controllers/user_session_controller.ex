@@ -12,7 +12,6 @@ defmodule BookifyWeb.UserSessionController do
     else
       conn
       |> put_flash(:error, "Wrong email or password")
-      |> put_flash(:email, String.slice(email, 0, 160))
       |> redirect(to: ~p"/accounts/login")
     end
   end

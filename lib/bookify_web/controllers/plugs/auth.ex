@@ -80,10 +80,6 @@ defmodule BookifyWeb.Plugs.Auth do
   end
 
   def on_mount(:require_authenticated_user, _params, session, socket) do
-    {:cont, mount_current_user(socket, session)}
-  end
-
-  def on_mount(:mount_current_user, _params, session, socket) do
     socket = mount_current_user(socket, session)
 
     if socket.assigns.current_user do
@@ -93,7 +89,11 @@ defmodule BookifyWeb.Plugs.Auth do
     end
   end
 
-  def on_mount(:require_admin_user, _params, session, socket) do
+  def on_mount(:mount_current_user, _params, session, socket) do
+    {:cont, mount_current_user(socket, session)}
+  end
+
+  def on_mount(:require_admin, _params, session, socket) do
     socket = mount_current_user(socket, session)
 
     if user_is_admin?(socket.assigns.current_user) do

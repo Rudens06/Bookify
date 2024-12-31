@@ -60,6 +60,7 @@
     id="author-form-component"
     module={BookifyWeb.AuthorLive.FormComponent}
     author={@author}
+    current_user={@current_user}
     action={@modal_action}
     patch={~p"/authors/#{@author.id}"}
   />

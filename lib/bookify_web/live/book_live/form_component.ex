@@ -1,5 +1,8 @@
 defmodule BookifyWeb.BookLive.FormComponent do
   use BookifyWeb, :live_component
+  import Bookify.Utils.Image
+  import Bookify.Utils.User
+
   alias Bookify.Books
   alias BookifyWeb.Modules.LiveUploader
 
@@ -50,13 +53,17 @@ defmodule BookifyWeb.BookLive.FormComponent do
             <div class="mb-2 text-sm font-semibold">Cover Image</div>
             <.live_file_input upload={@uploads.cover_image} />
           </div>
-          <%= for entry <- @uploads.cover_image.entries do %>
-            <.live_img_preview entry={entry} class="w-48" />
-          <% end %>
-          <%= for {_ref, msg} <- @uploads.cover_image.errors do %>
-            <div class="text-red-500 text-lg font-bold">
-              <%= Phoenix.Naming.humanize(msg) <> "!" %>
-            </div>
+          <%= if @uploads.cover_image.entries == [] do %>
+            <img src={image(@book)} class="w-48" />
+          <% else %>
+            <%= for entry <- @uploads.cover_image.entries do %>
+              <.live_img_preview entry={entry} class="w-48" />
+            <% end %>
+            <%= for {_ref, msg} <- @uploads.cover_image.errors do %>
+              <div class="text-red-500 text-lg font-bold">
+                <%= Phoenix.Naming.humanize(msg) <> "!" %>
+              </div>
+            <% end %>
           <% end %>
 
           <.input field={@form[:cover_image_filename]} type="hidden" />
@@ -103,20 +110,29 @@ defmodule BookifyWeb.BookLive.FormComponent do
   end
 
   def handle_event("save", %{"book" => book_params}, socket) do
-    book_params =
-      book_params
-      |> handle_upload(socket)
-      |> transform_genres()
+    if current_user(socket) |> is_admin?() do
+      book_params =
+        book_params
+        |> handle_upload(socket)
+        |> transform_genres()
 
-    save_book(socket, socket.assigns.action, book_params)
+      save_book(socket, socket.assigns.action, book_params)
+    else
+      not_allowed(socket)
+    end
   end
 
   defp save_book(socket, :edit, book_params) do
+    upload_entries = socket.assigns.uploads.cover_image.entries
+
     case Books.update_book(socket.assigns.book, book_params) do
       {:ok, book} ->
-        LiveUploader.delete_file(socket.assigns.old_filename)
+        if upload_entries != [] do
+          LiveUploader.delete_file(socket.assigns.old_filename)
+        end
+
         book = Books.preload(book, [:author])
-        notify_parent({:saved, book})
+        notify_parent({:book_saved, book})
 
         {:noreply,
          socket
@@ -132,7 +148,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
     case Books.create_book(book_params) do
       {:ok, book} ->
         book = Books.preload(book, [:author])
-        notify_parent({:saved, book})
+        notify_parent({:book_saved, book})
 
         {:noreply,
          socket
@@ -181,5 +197,12 @@ defmodule BookifyWeb.BookLive.FormComponent do
   defp genres_to_string(genres) do
     genres
     |> Enum.join(", ")
+  end
+
+  defp not_allowed(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "Not allowed!")
+     |> push_navigate(to: ~p"/")}
   end
 end

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mx-auto">
   <div class="search max-w-md mx-auto">
     <.input name="query" value={@query} type="text" placeholder="Search..." phx-keyup="search">
     </.input>
@@ -9,7 +9,7 @@
     phx-update="stream"
     phx-debounce="500"
     phx-viewport-bottom="load_more"
-    class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-8"
+    class="mt-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8"
   >
     <div
       :for={{id, book} <- @streams.books}
@@ -55,6 +55,7 @@
     module={BookifyWeb.BookLive.FormComponent}
     authors={@authors}
     book={@book}
+    current_user={@current_user}
     action={@modal_action}
     loading={false}
     patch={~p"/"}

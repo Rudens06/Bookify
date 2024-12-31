@@ -72,19 +72,27 @@ defmodule BookifyWeb.Router do
     end
   end
 
+  # Admin Routes
+  scope "/", BookifyWeb do
+    pipe_through :browser
+
+    live_session :require_admin,
+      on_mount: [{BookifyWeb.Plugs.Auth, :require_admin}] do
+        live "/book_import", BookImportLive.Index
+    end
+  end
+
   # Unauthenticated Routes
   scope "/", BookifyWeb do
     pipe_through :browser
 
     live_session :mount_current_user,
       on_mount: [{BookifyWeb.Plugs.Auth, :mount_current_user}] do
-      live "/", BookLive.Index, :index
-      live "/books/:isbn", BookLive.Show, :show
+      live "/", BookLive.Index
+      live "/books/:isbn", BookLive.Show
 
-      live "/authors", AuthorLive.Index, :index
-      live "/authors/:id", AuthorLive.Show, :show
-
-      live "/book_import", BookImportLive.Index
+      live "/authors", AuthorLive.Index
+      live "/authors/:id", AuthorLive.Show
     end
   end
 
@@ -98,6 +106,8 @@ defmodule BookifyWeb.Router do
 
       live "/users", UserLive.Index
       live "/users/:public_id", UserLive.Show
+
+
     end
 
     delete "/accounts/logout", UserSessionController, :delete

@@ -668,4 +668,37 @@ defmodule BookifyWeb.CoreComponents do
     </div>
     """
   end
+
+  def rating_stars(assigns) do
+    max_stars = 5
+    rating = assigns.rating
+
+    filled_stars = trunc(rating)
+    half_star = if rating - filled_stars >= 0.5, do: 1, else: 0
+    empty_stars = max_stars - filled_stars - half_star
+
+    assigns =
+      assigns
+      |> assign(filled: filled_stars, half: half_star, empty: empty_stars)
+
+    ~H"""
+    <div class="rating-stars">
+      <%= if @filled > 0 do %>
+        <%= for _ <- 1..@filled do %>
+          <i class="fa-solid fa-star"></i>
+        <% end %>
+      <% end %>
+
+      <%= if @half == 1 do %>
+        <i class="fa-solid fa-star-half-stroke"></i>
+      <% end %>
+
+      <%= if @empty > 0 do %>
+        <%= for _ <- 1..@empty do %>
+          <i class="fa-regular fa-star"></i>
+        <% end %>
+      <% end %>
+    </div>
+    """
+  end
 end

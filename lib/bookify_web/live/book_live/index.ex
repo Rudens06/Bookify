@@ -143,11 +143,11 @@ defmodule BookifyWeb.BookLive.Index do
      |> stream(:books, books, at: -1)}
   end
 
-  def handle_info({:saved, book}, socket) do
+  def handle_info({:book_saved, book}, socket) do
     {:noreply,
      socket
      |> assign(:modal_action, nil)
-     |> stream_insert(:books, book)}
+     |> stream_insert(:books, book, at: 0)}
   end
 
   defp not_allowed(socket) do
