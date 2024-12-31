@@ -83,7 +83,6 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
     else
       not_allowed(socket)
     end
-
   end
 
   defp save_author(socket, :edit, author_params) do

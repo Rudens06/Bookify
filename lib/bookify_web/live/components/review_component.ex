@@ -13,7 +13,7 @@ defmodule BookifyWeb.ReviewComponent do
       </.header>
       <.simple_form for={@form} phx-submit="save_review" phx-target={@myself}>
         <.input field={@form[:title]} type="text" label="Title" placeholder="Title" />
-        <.input field={@form[:body]} type="text" label="Body" placeholder="Content..." />
+        <.input field={@form[:body]} type="textarea" label="Body" placeholder="Content..." />
         <.input
           field={@form[:rating]}
           type="number"
