@@ -30,53 +30,32 @@
       <p class="mt-4">
         <%= @book.anotation %>
       </p>
-      <div class="mt-4">
-        <.live_component
-          module={BookifyWeb.ListActionButtonComponent}
-          current_user={@current_user}
-          book={@book}
-          list_name={Bookify.Lists.List.favorite_list_name()}
-          id={"favorites-list-toggle-button-" <> Integer.to_string(@book.id)}
-        >
-          <:in_list_icon>
-            <i class="fas fa-star text-yellow-400 hover:scale-110 transition-all"></i>
-          </:in_list_icon>
+      <%= if @book.imported_from do %>
+        <div class="imported-from">
+          <span class="text-sm text-gray-500">Imported from: <%= @book.imported_from %></span>
+        </div>
+      <% end %>
+      <div class="flex gap-1">
+    <%= for list_name <- Bookify.Lists.List.default_lists do %>
+      <.live_component
+        module={BookifyWeb.ListActionButtonComponent}
+        current_user={@current_user}
+        book={@book}
+        list_name={list_name}
+        id={"#{list_name}-list-toggle-button-" <> Integer.to_string(@book.id)}
+      >
+        <:in_list_icon>
+          <i class={Bookify.Lists.List.in_list_icons[list_name] <> " text-yellow-400 hover:scale-110 transition-all"}>
+          </i>
+        </:in_list_icon>
 
-          <:not_in_list_icon>
-            <i class="far fa-star text-gray-400 hover:scale-110 transition-all"></i>
-          </:not_in_list_icon>
-        </.live_component>
-        <.live_component
-          module={BookifyWeb.ListActionButtonComponent}
-          current_user={@current_user}
-          book={@book}
-          list_name={Bookify.Lists.List.reading_list_name()}
-          id={"reading-list-toggle-button-" <> Integer.to_string(@book.id)}
-        >
-          <:in_list_icon>
-            <i class="fas fa-book text-yellow-400 hover:scale-110 transition-all"></i>
-          </:in_list_icon>
-
-          <:not_in_list_icon>
-            <i class="fas fa-book text-gray-400 hover:scale-110 transition-all"></i>
-          </:not_in_list_icon>
-        </.live_component>
-        <.live_component
-          module={BookifyWeb.ListActionButtonComponent}
-          current_user={@current_user}
-          book={@book}
-          list_name={Bookify.Lists.List.wishlist_list_name()}
-          id={"wishlist-list-toggle-button-" <> Integer.to_string(@book.id)}
-        >
-          <:in_list_icon>
-            <i class="fas fa-bookmark text-yellow-400 hover:scale-110 transition-all"></i>
-          </:in_list_icon>
-
-          <:not_in_list_icon>
-            <i class="fas fa-bookmark text-gray-400 hover:scale-110 transition-all"></i>
-          </:not_in_list_icon>
-        </.live_component>
-      </div>
+        <:not_in_list_icon>
+          <i class={Bookify.Lists.List.not_in_list_icons[list_name] <> " text-gray-400 hover:scale-110 transition-all"}>
+          </i>
+        </:not_in_list_icon>
+      </.live_component>
+    <% end %>
+  </div>
     </div>
   </div>
   <.button :if={is_admin?(@current_user)} phx-click="edit_book" class="mt-2">
