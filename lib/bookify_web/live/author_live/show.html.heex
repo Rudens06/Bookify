@@ -31,7 +31,7 @@
   <div class="mt-10">
     <h3 class="text-xl font-semibold mb-4"><%= @author.name <> "'s books:" %></h3>
     <div class="space-y-6">
-      <%= for book <- @author.books do %>
+      <%= for book <- @books do %>
         <div class="flex items-start gap-4">
           <div class="flex-shrink-0">
             <.link navigate={~p"/books/#{book.isbn}"}>
@@ -46,6 +46,10 @@
             <.link navigate={~p"/books/#{book.isbn}"}>
               <h4 class="text-lg font-semibold hover:underline"><%= book.title %></h4>
             </.link>
+            <div class="flex">
+              <.rating_stars rating={book.avg_rating} />
+              <span>(<%= book.review_count %>)</span>
+            </div>
             <p class="mt-2 text-sm text-gray-700 line-clamp-3">
               <%= book.anotation %>
             </p>

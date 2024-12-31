@@ -14,7 +14,8 @@ defmodule Bookify.Books.Book do
     :cover_image_url,
     :cover_image_filename,
     :anotation,
-    :author_id
+    :author_id,
+    :imported_from
   ]
 
   @required_fields [
@@ -36,6 +37,7 @@ defmodule Bookify.Books.Book do
     field :cover_image_url, :string
     field :cover_image_filename, :string
     field :anotation, :string
+    field :imported_from, :string
     field :avg_rating, :float, virtual: true
     field :review_count, :integer, virtual: true
     belongs_to :author, Author

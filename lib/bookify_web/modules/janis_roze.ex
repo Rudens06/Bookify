@@ -9,6 +9,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
 
   @api_base_url "https://api.scraperapi.com/"
   @language "lv"
+  @imported_from "Jānis Roze"
 
   @search_url "https://www.janisroze.lv/#{@language}/catalogsearch/result/index/"
   @book_category 820
@@ -172,7 +173,8 @@ defmodule BookifyWeb.Modules.JanisRoze do
         "publish_year" => String.to_integer(book_data["izdošanas_gads"]),
         "page_count" => String.to_integer(book_data["lappušu_skaits"]),
         "cover_image_filename" => book_data["cover_image_filename"],
-        "anotation" => book_data["anotation"]
+        "anotation" => book_data["anotation"],
+        "imported_from" => @imported_from
       }
     else
       %{
@@ -183,7 +185,8 @@ defmodule BookifyWeb.Modules.JanisRoze do
         "publish_year" => String.to_integer(book_data["publishing_year"]),
         "page_count" => String.to_integer(book_data["pages"]),
         "cover_image_filename" => book_data["cover_image_filename"],
-        "anotation" => book_data["anotation"]
+        "anotation" => book_data["anotation"],
+        "imported_from" => @imported_from
       }
     end
   end

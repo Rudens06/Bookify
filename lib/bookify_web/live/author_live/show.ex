@@ -6,6 +6,7 @@ defmodule BookifyWeb.AuthorLive.Show do
 
   alias Bookify.Authors
   alias Bookify.Authors.Author
+  alias Bookify.Books
   alias BookifyWeb.Modules.LiveUploader
 
   def mount(_params, _session, socket) do
@@ -18,10 +19,12 @@ defmodule BookifyWeb.AuthorLive.Show do
     socket =
       case validate_integer_id(id) do
         {:ok, id} ->
-          case Authors.get_author(id, [:books]) do
+          case Authors.get_author(id) do
             author = %Author{} ->
+              books = Books.get_books_by_author(author.id)
               socket
               |> assign(:page_title, author.name)
+              |> assign(:books, books)
               |> assign(:author, author)
 
             {:error, {:not_found, message}} ->

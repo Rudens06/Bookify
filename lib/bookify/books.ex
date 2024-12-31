@@ -18,7 +18,7 @@ defmodule Bookify.Books do
 
     base_book_query(preloads)
     |> join(:inner, [b], a in assoc(b, :author))
-    |> where([b, a], ilike(b.title, ^search_term) or ilike(a.name, ^search_term))
+    |> where([b, r, a], ilike(b.title, ^search_term) or ilike(a.name, ^search_term))
     |> limit(^limit)
     |> offset(^offset)
     |> order_by([b], asc: b.title)
@@ -47,6 +47,12 @@ defmodule Bookify.Books do
       nil -> not_found()
       book -> book
     end
+  end
+
+  def get_books_by_author(author_id, preloads \\ []) do
+    base_book_query(preloads)
+    |> where([b], b.author_id == ^author_id)
+    |> Repo.all()
   end
 
   def preload(book, preloads) do
