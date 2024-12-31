@@ -49,6 +49,12 @@ defmodule Bookify.Books do
     end
   end
 
+  def get_books_by_author(author_id, preloads \\ []) do
+    base_book_query(preloads)
+    |> where([b], b.author_id == ^author_id)
+    |> Repo.all()
+  end
+
   def preload(book, preloads) do
     Repo.preload(book, preloads)
   end

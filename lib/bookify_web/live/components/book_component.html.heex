@@ -3,8 +3,10 @@
     <img src={image(@book)} class="h-96 w-64 object-cover drop-shadow-lg rounded-lg" />
     <div class="text-2xl font-bold font-serif mt-2 hover:text-gray-600"><%= @book.title %></div>
     <div class="text-sm text-gray-500 font-sans mt-1"><%= @book.author.name %></div>
-    <.rating_stars rating={@book.avg_rating} />
-    <span>(<%= @book.review_count %>)</span>
+    <div class="flex items-center mt-1">
+      <.rating_stars rating={@book.avg_rating} />
+      <span>(<%= @book.review_count %>)</span>
+    </div>
   </.link>
   <div class="flex gap-1">
     <%= for list_name <- Bookify.Lists.List.default_lists do %>
