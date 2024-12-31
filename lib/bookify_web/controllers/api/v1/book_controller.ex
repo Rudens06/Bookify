@@ -15,10 +15,16 @@ defmodule BookifyWeb.Api.V1.BookController do
   def index(conn, params) do
     limit = limit(params)
     offset = offset(params)
+    search_query = Map.get(params, "search", nil)
 
     books =
-      Books.list_books(limit, offset)
-      |> Enum.map(&put_full_image_url/1)
+      if search_query do
+        Books.search_books(search_query, limit, offset)
+        |> Enum.map(&put_full_image_url/1)
+      else
+        Books.list_books(limit, offset)
+        |> Enum.map(&put_full_image_url/1)
+      end
 
     render(conn, :index, books: books)
   end
