@@ -83,27 +83,31 @@ defmodule BookifyWeb.BookLive.Show do
   end
 
   def handle_event("delete_review", %{"id" => id}, socket) do
+    user = current_user(socket)
     review = Reviews.get_review(id)
+  if is_resource_owner?(user, review) || is_admin?(user) do
+      case Reviews.delete_review(review) do
+        {:ok, review} ->
+          updated_reviews =
+            socket.assigns.reviews
+            |> Enum.reject(fn r -> r.id == review.id end)
 
-    case Reviews.delete_review(review) do
-      {:ok, review} ->
-        updated_reviews =
-          socket.assigns.reviews
-          |> Enum.reject(fn r -> r.id == review.id end)
+          socket =
+            socket
+            |> put_flash(:info, "Review deleted successfully")
+            |> assign(:reviews, updated_reviews)
 
-        socket =
+          {:noreply, socket}
+
+        {:error, _reason} ->
           socket
-          |> put_flash(:info, "Review deleted successfully")
-          |> assign(:reviews, updated_reviews)
+          |> put_flash(:error, "Something went wrong")
+          |> push_patch(to: socket.assigns.url)
 
-        {:noreply, socket}
-
-      {:error, _reason} ->
-        socket
-        |> put_flash(:error, "Something went wrong")
-        |> push_patch(to: socket.assigns.url)
-
-        {:noreply, socket}
+          {:noreply, socket}
+      end
+    else
+      not_allowed(socket)
     end
   end
 
