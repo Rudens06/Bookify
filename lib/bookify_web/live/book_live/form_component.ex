@@ -49,6 +49,7 @@ defmodule BookifyWeb.BookLive.FormComponent do
           <.input field={@form[:anotation]} type="textarea" label="Anotation" />
           <.input field={@form[:page_count]} type="number" min="1" label="Page count" />
           <.input field={@form[:publish_year]} type="number" min="1" label="Publish year" />
+          <.input field={@form[:imported_from]} type="hidden"/>
           <div phx-drop-target={@uploads.cover_image.ref}>
             <div class="mb-2 text-sm font-semibold">Cover Image</div>
             <.live_file_input upload={@uploads.cover_image} />
@@ -67,7 +68,6 @@ defmodule BookifyWeb.BookLive.FormComponent do
           <% end %>
 
           <.input field={@form[:cover_image_filename]} type="hidden" />
-          <.input field={@form[:cover_image_url]} type="text" label="Cover Image url" />
           <:actions>
             <.button phx-disable-with="Saving...">Save Book</.button>
           </:actions>

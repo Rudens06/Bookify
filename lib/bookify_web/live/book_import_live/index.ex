@@ -144,7 +144,7 @@ defmodule BookifyWeb.BookImportLive.Index do
         <%= for book <- @books do %>
           <div class="flex flex-col justify-between border rounded-lg shadow-md overflow-hidden h-full">
             <a href={book.link} target="_blank" class="block">
-              <img src={book.image_url} alt={book.title} class="w-full h-72 object-cover" />
+              <img src={book.image_url} alt={book.title} class="w-full h-96 object-cover" />
             </a>
             <div class="p-4 flex flex-col flex-grow">
               <h3 class="mb-2 text-lg font-semibold">
