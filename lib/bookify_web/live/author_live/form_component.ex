@@ -27,7 +27,6 @@ defmodule BookifyWeb.AuthorLive.FormComponent do
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:birth_year]} type="number" label="Birth year" />
         <.input field={@form[:biography]} type="textarea" label="Bio" />
-        <.input field={@form[:image_url]} type="text" label="Image url" />
         <div phx-drop-target={@uploads.author_image.ref}>
           <div class="mb-2 text-sm font-semibold">Author Image</div>
           <.live_file_input upload={@uploads.author_image} />
