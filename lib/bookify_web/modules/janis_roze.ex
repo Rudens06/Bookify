@@ -167,7 +167,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
     if @language == "lv" do
       %{
         "title" => book_data["title"],
-        "author" => book_data["autors"],
+        "author" => author(book_data["autors"]),
         "isbn" => book_data["svītrkods"],
         "genres" => book_data["genres"],
         "publish_year" => String.to_integer(book_data["izdošanas_gads"]),
@@ -179,7 +179,7 @@ defmodule BookifyWeb.Modules.JanisRoze do
     else
       %{
         "title" => book_data["title"],
-        "author" => book_data["autor"],
+        "author" => author(book_data["author"]),
         "isbn" => book_data["sku"],
         "genres" => book_data["genres"],
         "publish_year" => String.to_integer(book_data["publishing_year"]),
@@ -226,5 +226,12 @@ defmodule BookifyWeb.Modules.JanisRoze do
       |> Path.extname()
 
     "#{UUID.uuid4()}#{filename}"
+  end
+
+  defp author(authors) do
+    authors
+    |> String.split(",")
+    |> List.first()
+    |> String.trim()
   end
 end
