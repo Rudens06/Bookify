@@ -57,8 +57,9 @@ defmodule BookifyWeb.AuthorLive.Show do
 
     if is_admin?(user) do
       author = socket.assigns.author
+      books = socket.assigns.books
 
-      if author.books == [] do
+      if books == [] do
         socket =
           case Authors.delete_author(author) do
             {:ok, _} ->
